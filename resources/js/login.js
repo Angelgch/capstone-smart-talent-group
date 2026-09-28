@@ -26,7 +26,7 @@ function initLoginForm() {
         // REDIRECCIONES EXACTAS SEGÚN TU web.php
         if (email === "admin@gmail.com" && password === "12345") {
             window.location.href = "/admin/dashboard";
-        } else if (email === "client@gmail.com" && password === "12345") {
+        } else if (email === "user@gmail.com" && password === "12345") {
             window.location.href = "/user/dashboard";
         } else {
             if (loginError) {
