@@ -7,13 +7,15 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/js/app.js',
                 'resources/css/login.css',
-                'resources/js/login.js',
                 'resources/css/admin.css',
-                'resources/js/admin.js',
                 'resources/css/user.css',
+                'resources/js/app.js',
+                'resources/js/login.js',
+                'resources/js/admin.js',
                 'resources/js/user.js',
+                'resources/js/navigationAdmin.js',
+                'resources/js/navigationUser.js',
             ],
             refresh: true,
         }),

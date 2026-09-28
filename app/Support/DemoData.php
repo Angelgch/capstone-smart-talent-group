@@ -90,15 +90,27 @@ class DemoData
         abort(404);
     }
     public static function requests(): array
+    {
+        return [
+            ['company_id' => 1, 'ruc' => '20100047218', 'name' => 'Petro Perú', 'docs' => ['Antecedentes', 'Verif. Laborales', 'Récord Laboral'], 'date' => '2026-09-27', 'status' => 'Pendiente',   'assigned' => null],
+            ['company_id' => 2, 'ruc' => '20452430338', 'name' => 'Claro Perú', 'docs' => ['Verif. Crediticias', 'Ficha RENIEC'],                   'date' => '2026-09-26', 'status' => 'En Progreso', 'assigned' => 'asesor1@gmail.com'],
+            ['company_id' => 3, 'ruc' => '20100113610', 'name' => 'Backus',     'docs' => ['Antecedentes', 'Verif. Académicas'],                    'date' => '2026-09-25', 'status' => 'Completado',  'assigned' => 'asesor2@gmail.com'],
+            ['company_id' => 4, 'ruc' => '20100053455', 'name' => 'Interbank',  'docs' => ['Verif. Domiciliarias'],                                 'date' => '2026-09-24', 'status' => 'Cancelado',   'assigned' => 'asesor1@gmail.com'],
+            ['company_id' => 5, 'ruc' => '20100055237', 'name' => 'Alicorp',    'docs' => ['Antecedentes', 'Verif. Laborales', 'Verif. Académicas', 'Ficha RENIEC'], 'date' => '2026-09-23', 'status' => 'En Progreso', 'assigned' => 'asesor3@gmail.com'],
+            ['company_id' => 1, 'ruc' => '20100047218', 'name' => 'Petro Perú', 'docs' => ['Récord Laboral'],                                       'date' => '2026-09-20', 'status' => 'Completado',  'assigned' => 'asesor2@gmail.com'],
+            ['company_id' => 2, 'ruc' => '20452430338', 'name' => 'Claro Perú', 'docs' => ['Antecedentes'],                                         'date' => '2026-09-18', 'status' => 'Completado',  'assigned' => 'asesor1@gmail.com'],
+        ];
+    }
+    public static function userRequests(): array
 {
-    return [
-        ['company_id' => 1, 'ruc' => '20100047218', 'name' => 'Petro Perú', 'docs' => ['Antecedentes', 'Verif. Laborales', 'Récord Laboral'], 'date' => '2026-09-27', 'status' => 'Pendiente',   'assigned' => null],
-        ['company_id' => 2, 'ruc' => '20452430338', 'name' => 'Claro Perú', 'docs' => ['Verif. Crediticias', 'Ficha RENIEC'],                   'date' => '2026-09-26', 'status' => 'En Progreso', 'assigned' => 'asesor1@gmail.com'],
-        ['company_id' => 3, 'ruc' => '20100113610', 'name' => 'Backus',     'docs' => ['Antecedentes', 'Verif. Académicas'],                    'date' => '2026-09-25', 'status' => 'Completado',  'assigned' => 'asesor2@gmail.com'],
-        ['company_id' => 4, 'ruc' => '20100053455', 'name' => 'Interbank',  'docs' => ['Verif. Domiciliarias'],                                 'date' => '2026-09-24', 'status' => 'Cancelado',   'assigned' => 'asesor1@gmail.com'],
-        ['company_id' => 5, 'ruc' => '20100055237', 'name' => 'Alicorp',    'docs' => ['Antecedentes', 'Verif. Laborales', 'Verif. Académicas', 'Ficha RENIEC'], 'date' => '2026-09-23', 'status' => 'En Progreso', 'assigned' => 'asesor3@gmail.com'],
-        ['company_id' => 1, 'ruc' => '20100047218', 'name' => 'Petro Perú', 'docs' => ['Récord Laboral'],                                       'date' => '2026-09-20', 'status' => 'Completado',  'assigned' => 'asesor2@gmail.com'],
-        ['company_id' => 2, 'ruc' => '20452430338', 'name' => 'Claro Perú', 'docs' => ['Antecedentes'],                                         'date' => '2026-09-18', 'status' => 'Completado',  'assigned' => 'asesor1@gmail.com'],
-    ];
+    $dates = ['2026-09-26', '2026-09-24', '2026-09-20'];
+    $out = [];
+
+    foreach (self::candidates() as $i => $c) {
+        $c['date'] = $dates[$i] ?? '2026-09-01';
+        $out[] = $c;
+    }
+
+    return $out;
 }
 }

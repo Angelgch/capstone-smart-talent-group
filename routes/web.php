@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Support\DemoData;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,25 +39,58 @@ Route::redirect('/admin', '/admin/dashboard');
 // 2. PANEL DE USUARIO (CLIENTE / POSTULANTE)
 // ==========================================
 Route::prefix('user')->name('user.')->group(function () {
-    
-    // Dashboard principal del usuario
+
     Route::get('/dashboard', function () {
-        return view('user.dashboard'); 
+        $all = collect(DemoData::userRequests())->sortByDesc('date')->values();
+
+        return view('user.dashboard', [
+            'stats' => [
+                'total'      => $all->count(),
+                'proceso'    => $all->where('status', 'En Proceso')->count(),
+                'realizadas' => $all->where('status', 'Realizado')->count(),
+                'canceladas' => $all->where('status', 'Cancelado')->count(),
+            ],
+            'requests' => $all->take(5), // máximo 5
+            'services' => DemoData::services(),
+        ]);
     })->name('dashboard');
 
-    Route::get('/index', function () {
-        return view('user.index'); 
-    })->name('index');
+    Route::get('/requests', function () {
+        return view('user.requests.index', [
+            'candidates' => DemoData::userRequests(),
+            'services'   => DemoData::services(),
+        ]);
+    })->name('requests.index');
 
-    // Aquí puedes añadir más rutas exclusivas para el rol de usuario en el futuro
+    Route::get('/requests/create', function () {
+        return view('user.requests.create', ['services' => DemoData::services()]);
+    })->name('requests.create');
+
+    Route::get('/requests/{dni}/edit', function ($dni) {
+        $c = DemoData::candidate($dni);
+
+        // Separa nombre completo: últimos 2 = apellidos, el resto = nombres
+        $parts = explode(' ', trim($c['name']));
+        $c['surnames'] = implode(' ', array_slice($parts, -2));
+        $c['names']    = implode(' ', array_slice($parts, 0, -2));
+        $c['email']    = 'candidato@correo.com'; // demo
+        $c['phone']    = '999 999 999';          // demo
+
+        return view('user.requests.edit', ['candidate' => $c, 'services' => DemoData::services()]);
+    })->name('requests.edit');
+
+    Route::get('/requests/{dni}/downloads', function ($dni) {
+        return view('user.requests.downloads', [
+            'candidate' => DemoData::candidate($dni),
+            'services'  => DemoData::services(),
+        ]);
+    })->name('requests.downloads');
 });
 
 
 // ==========================================
 // 3. PANEL DE ADMINISTRADOR
 // ==========================================
-use App\Support\DemoData;
-
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', function () {
