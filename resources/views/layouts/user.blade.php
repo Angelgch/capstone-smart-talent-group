@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- recien añadido -->
+
     <title>@yield('title', 'Portal Cliente - SmarTalent')</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.ico') }}">
 
@@ -24,6 +27,7 @@
         'resources/css/user.css',
         'resources/js/user.js',
         'resources/js/navigationUser.js',
+        'resources/js/user-create.js',
     ])
 </head>
 <body>
