@@ -31,6 +31,11 @@
                         <i class="fa-solid fa-id-card text-muted"></i> Mi Perfil
                     </a>
                 </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#" onclick="devAlert(event)">
+                        <i class="fa-solid fa-gear text-muted"></i> Configuración
+                    </a>
+                </li>
                 <li><hr class="dropdown-divider my-1"></li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}" class="m-0">
@@ -65,10 +70,10 @@
             <i class="fas fa-user-circle"></i>
             <span class="sidebar-text">Mi Perfil</span>
         </a>
-
-        <a href="#" onclick="devAlert(event)" class="nav-item-bottom" title="Soporte">
-            <i class="fas fa-headset"></i>
-            <span class="sidebar-text">Soporte</span>
+        <a href="#" onclick="devAlert(event)" title="Configuracion">
+            <i class="fas fa-cog"></i>
+            <span class="sidebar-text">Configuracion</span>
         </a>
+
     </nav>
 </aside>

@@ -63,6 +63,14 @@
             <i class="fas fa-folder-open"></i>
             <span class="sidebar-text">Empresas</span>
         </a>
+        <a href="#" onclick="devAlert(event)" title="Mi Perfil">
+            <i class="fas fa-user-circle"></i>
+            <span class="sidebar-text">Mi Perfil</span>
+        </a>
+        <a href="#" onclick="devAlert(event)" title="Configuracion">
+            <i class="fas fa-cog"></i>
+            <span class="sidebar-text">Configuracion</span>
+        </a>
 
 
     </nav>
