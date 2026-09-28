@@ -1,0 +1,589 @@
+/* ==========================================================================
+1. IMPORTACIÓN DE FUENTES
+========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+2. VARIABLES Y CONFIGURACIÓN GLOBAL (TEMA CLARO)
+========================================================================== */
+:root {
+    /* Paleta cromática principal */
+    --teal: #30c1ac;
+    --teal-dark: #249987;
+    --orange: #FA8A24;
+    --pink: #EB2A5D;
+    
+    /* Dimensiones de estructura de la aplicación */
+    --topbar-h: 56px; 
+    --sidebar-w: 200px;             /* Ancho en estado desplegado */
+    --sidebar-collapsed-w: 68px;    /* Ancho exacto del estado colapsado */
+    
+    /* Colores de superficie y bordes */
+    --bg: #f8f9fa;
+    --bg-surface: #ffffff;
+    --bg-table-header: #f8f9fa;
+    --border: rgba(0,0,0,0.08);
+    
+    /* Escala de grises para textos */
+    --text-main: #212529;
+    --text-muted: #6c757d;
+    --text-light: #adb5bd;
+
+    /* Estilos visuales comunes */
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* ==========================================================================
+3. CONFIGURACIÓN DE TEMA OSCURO (DARK MODE)
+========================================================================== */
+[data-theme="dark"] {
+    --bg: #121212;
+    --bg-surface: #1e1e1e;
+    --bg-table-header: #2a2a2a;
+    --border: rgba(255, 255, 255, 0.12);
+    
+    --text-main: #f8f9fa;
+    --text-muted: #adb5bd;
+    --text-light: #6c757d;
+}
+
+/* Reset básico */
+* { 
+    box-sizing: border-box; 
+}
+
+body { 
+    margin: 0; 
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif; 
+    background: var(--bg) !important;
+    color: var(--text-main) !important;
+}
+
+/* ==========================================================================
+4. ESTILOS DE ACCESIBILIDAD
+========================================================================== */
+/* Aplicados a HTML para no afectar el Topbar fijo */
+html.high-contrast { filter: contrast(175%) !important; background-color: #000 !important; }
+html.filter-grayscale { filter: grayscale(100%) !important; }
+html.filter-deuteranopia { filter: hue-rotate(90deg) !important; }
+html.filter-protanopia { filter: hue-rotate(180deg) !important; }
+
+/* Aplicados al Body */
+body.font-dyslexic { font-family: 'OpenDyslexicRegular', sans-serif !important; }
+body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; line-height: 1.8 !important; }
+
+/* ==========================================================================
+5. BARRA SUPERIOR (TOPBAR)
+========================================================================== */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--topbar-h); /* Asegúrate de que --topbar-h sea 56px */
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000; /* El más alto para que mande */
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.topbar-logo {
+    height: 32px !important;
+    max-height: 32px !important;
+    width: auto !important;
+    object-fit: contain !important;
+}
+
+.topbar .page-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--teal-dark);
+}
+
+.btn-sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-left: 1px;
+}
+
+.btn-sidebar-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .btn-sidebar-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Controles de perfil y selector de tema */
+.btn-profile-dropdown {
+    background-color: rgba(48, 193, 172, 0.12);
+    color: var(--teal-dark);
+    border: 1px solid rgba(48, 193, 172, 0.3);
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+}
+
+.btn-profile-dropdown:hover,
+.btn-profile-dropdown:focus {
+    background-color: rgba(48, 193, 172, 0.25);
+    color: #135d54;
+    box-shadow: none;
+}
+
+[data-theme="dark"] .btn-profile-dropdown {
+    background-color: rgba(48, 193, 172, 0.18);
+    color: var(--teal);
+    border-color: rgba(48, 193, 172, 0.4);
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-mode-btn { 
+    background: transparent; 
+    border: 1px solid var(--border); 
+    color: var(--text-main); 
+    border-radius: 20px; 
+    padding: 4px 12px; 
+    font-size: 0.825rem;
+    cursor: pointer; 
+}
+
+/* ==========================================================================
+6. CONTENEDOR PRINCIPAL Y ESTRUCTURA DE LA APP
+========================================================================== */
+.app-container {
+    margin-top: var(--topbar-h);
+    display: flex;
+    min-height: calc(100vh - var(--topbar-h));
+    width: 100%;
+}
+
+/* ==========================================================================
+7. MENÚ LATERAL (SIDEBAR) - ESTADO DESPLEGADO (DEFAULT)
+========================================================================== */
+.sidebar {
+    position: fixed;
+    top: var(--topbar-h); /* <-- ¡Clave! Empieza justo donde termina el navbar */
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    z-index: 900; /* Menor que el topbar */
+    border-right: 1px solid var(--border);
+    overflow-x: hidden;
+}
+
+.sidebar-nav { 
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    height: 100%;
+}
+
+/* Enlace del menú */
+.sidebar-nav a { 
+    display: flex; 
+    align-items: center; 
+    height: 48px; 
+    padding: 0 !important;
+    color: var(--text-main); 
+    text-decoration: none; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar-nav a:hover, 
+.sidebar-nav a.active { 
+    color: var(--pink); 
+    background: rgba(235, 42, 93, 0.08); 
+    border-left-color: var(--pink);
+}
+
+/* Empuja el último ítem (Soporte) hasta el final del menú */
+.sidebar-nav a.nav-item-bottom {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+}
+
+.sidebar-nav a i { 
+    width: calc(var(--sidebar-collapsed-w) - 3px); 
+    min-width: calc(var(--sidebar-collapsed-w) - 3px); 
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem; 
+    flex-shrink: 0;
+    margin: 0 !important;
+}
+
+.sidebar-text {
+    white-space: nowrap;
+    margin-left: 0;
+}
+
+/* ==========================================================================
+8. ÁREA DE CONTENIDO PRINCIPAL (MAIN CONTENT)
+========================================================================== */
+.main-content {
+    margin-top: var(--topbar-h); /* Empuja el contenido debajo del navbar */
+    margin-left: var(--sidebar-w); /* Deja espacio para el sidebar */
+    flex: 1;
+    min-height: calc(100vh - var(--topbar-h));
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+}
+
+/* ==========================================================================
+9. ESTADO COLAPSADO (SIDEBAR-IS-COLLAPSED)
+========================================================================== */
+html.sidebar-is-collapsed .sidebar,
+body.sidebar-is-collapsed .sidebar {
+    width: var(--sidebar-collapsed-w) !important;
+}
+
+html.sidebar-is-collapsed .main-content,
+body.sidebar-is-collapsed .main-content {
+    margin-left: var(--sidebar-collapsed-w) !important;
+}
+
+html.sidebar-is-collapsed .sidebar-text,
+body.sidebar-is-collapsed .sidebar-text {
+    display: none !important;
+}
+
+/* ==========================================================================
+10. COMPONENTES VISUALES: TARJETAS ESTADÍSTICAS (STAT CARDS)
+========================================================================== */
+.stat-card { 
+    background: var(--bg-surface); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius-lg); 
+    padding: 20px; 
+    display: flex; 
+    align-items: center; 
+    gap: 16px; 
+    box-shadow: var(--shadow-sm); 
+}
+
+.stat-icon { 
+    width: 46px; 
+    height: 46px; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 1.25rem; 
+    color: #fff; 
+}
+
+.stat-icon.teal { background: var(--teal); }
+.stat-icon.orange { background: var(--orange); }
+.stat-icon.pink { background: #34c759; }
+.stat-icon.green { background: #ff3b30; }
+
+.stat-number { 
+    font-size: 2rem; 
+    font-weight: 700; 
+    color: var(--text-main); 
+    line-height: 1; 
+}
+
+.stat-label { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    margin-top: 4px; 
+    font-weight: 500; 
+}
+
+/* ==========================================================================
+11. COMPONENTES VISUALES: TABLAS Y FILTROS
+========================================================================== */
+.filter-section { 
+    background: var(--bg-surface); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius-lg); 
+    padding: 16px 20px; 
+    display: flex; 
+    gap: 16px; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    margin-bottom: 24px; 
+}
+
+.table-custom-container { 
+    overflow-x: auto; 
+    background: var(--bg-surface); 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--border); 
+    box-shadow: var(--shadow-sm); 
+    padding: 16px; 
+}
+
+.table-simple { 
+    width: 100%; 
+    border-collapse: separate; 
+    border-spacing: 0; 
+}
+
+.table-simple thead th { 
+    background: var(--bg-table-header); 
+    color: var(--text-main); 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    padding: 12px 16px; 
+    border-bottom: 2px solid var(--border); 
+}
+
+.table-simple tbody td { 
+    padding: 14px 16px; 
+    font-size: 0.875rem; 
+    color: var(--text-main); 
+    vertical-align: middle; 
+    border-bottom: 1px solid var(--border); 
+}
+
+.btn-gestionar { 
+    background: var(--teal); 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    padding: 6px 14px; 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+}
+
+/* ==========================================================================
+12. SOBREESCRITURAS PARA FORMULARIOS EN MODO OSCURO
+========================================================================== */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+
+/* --- CORRECCIÓN FORZADA DE POSICIONAMIENTO --- */
+.topbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 56px !important;
+    z-index: 1050 !important;
+}
+
+.sidebar {
+    position: fixed !important;
+    top: 56px !important; /* Empieza exactamente donde termina el navbar */
+    left: 0 !important;
+    bottom: 0 !important;
+    height: calc(100vh - 56px) !important;
+    width: var(--sidebar-w, 260px) !important;
+    z-index: 1000 !important;
+    margin-top: 0 !important;
+}
+
+.main-content {
+    margin-top: 56px !important;
+    margin-left: var(--sidebar-w, 260px) !important;
+    width: calc(100% - var(--sidebar-w, 260px)) !important;
+    min-height: calc(100vh - 56px) !important;
+}
+
+/* Si el sidebar se colapsa */
+body.sidebar-is-collapsed .sidebar {
+    width: 68px !important;
+}
+body.sidebar-is-collapsed .main-content {
+    margin-left: 68px !important;
+    width: calc(100% - 68px) !important;
+}
+
+.badge-no-solicitado {
+    background: rgba(108, 117, 125, 0.12);
+    color: var(--text-muted);
+    border-color: rgba(108, 117, 125, 0.25);
+}
+
+.company-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+}
+.company-card-info h6 { margin: 0; font-weight: 700; color: var(--text-main); }
+.company-card-info small { color: var(--text-muted); }
+.company-card-arrow {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.company-card-arrow:hover { background: var(--teal-dark); }
+
+/* ===== BADGES DE ESTADO ===== */
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: inline-block;
+    min-width: 88px;
+    text-align: center;
+    border: 1px solid transparent;
+}
+.badge-no-solicitado { background: rgba(108,117,125,.12); color: var(--text-muted); border-color: rgba(108,117,125,.25); }
+.badge-progreso      { background: rgba(250,138,36,.15);  color: var(--orange);     border-color: rgba(250,138,36,.35); }
+.badge-realizado     { background: rgba(52,199,89,.15);   color: #34c759;           border-color: rgba(52,199,89,.35); }
+.badge-cancelado     { background: rgba(255,59,48,.15);   color: #ff3b30;           border-color: rgba(255,59,48,.35); }
+
+/* ===== BOTÓN EXCEL ===== */
+.btn-excel {
+    background: var(--orange); color: #fff; border: none; border-radius: 12px;
+    padding: 10px 18px; font-size: .875rem; font-weight: 600;
+}
+.btn-excel:hover { background: #e0771c; color: #fff; }
+.btn-excel.btn-sm { padding: 6px 14px; font-size: .8rem; }
+
+/* ===== TABLA MATRIZ (estilo Excel, con líneas) ===== */
+.table-matrix { width: 100%; border-collapse: collapse; white-space: nowrap; }
+.table-matrix th, .table-matrix td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: .8rem;
+    color: var(--text-main);
+}
+.table-matrix thead th {
+    background: var(--bg-table-header);
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.table-matrix th:nth-child(2), .table-matrix td:nth-child(2) { text-align: left; }
+.table-matrix tbody tr:hover { background: rgba(128,128,128,.05); }
+.cell-text { display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+
+/* ===== BOTONES DE ÍCONO ===== */
+.btn-icon {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; text-decoration: none; font-size: .85rem; cursor: pointer;
+}
+.btn-icon:hover { filter: brightness(.9); color: #fff; }
+.btn-icon-edit  { background: var(--teal); }
+.btn-icon-files { background: var(--orange); }
+.btn-icon-view  { background: #0d6efd; }
+
+/* ===== PÁGINAS EDIT / DOWNLOADS ===== */
+.edit-header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 16px;
+}
+.edit-header h6 { margin: 0; font-weight: 700; color: var(--text-main); }
+.edit-header small { color: var(--text-muted); }
+
+.edit-card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 8px 20px 20px; box-shadow: var(--shadow-sm);
+}
+.edit-row {
+    display: grid; grid-template-columns: 1.4fr 1fr 1.6fr;
+    gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.edit-row-text { grid-column: 1 / -1; }
+.edit-row-name { font-weight: 600; color: var(--text-main); }
+.edit-extra { padding-top: 20px; }
+.edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+.doc-item {
+    display: grid; grid-template-columns: 1.4fr 2fr auto;
+    gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.doc-item-off { opacity: .6; }
+.doc-name { font-weight: 600; color: var(--text-main); }
+.doc-file { color: var(--text-main); font-size: .9rem; }
+.doc-actions { display: flex; gap: 6px; justify-content: flex-end; min-width: 72px; }
+
+
+
+/* ===== DASHBOARD ===== */
+.stat-icon.red    { background: #ff3b30; }
+.stat-icon.yellow { background: #f7c948; }
+.stat-icon.green  { background: #34c759; }
+.stat-icon.gray   { background: #8e8e93; }
+
+.dash-badge-pendiente  { background: rgba(255,59,48,.15);  color: #ff3b30; border-color: rgba(255,59,48,.35); }
+.dash-badge-progreso   { background: rgba(247,201,72,.22); color: #b8860b; border-color: rgba(247,201,72,.5); }
+.dash-badge-completado { background: rgba(52,199,89,.15);  color: #34c759; border-color: rgba(52,199,89,.35); }
+.dash-badge-cancelado  { background: rgba(142,142,147,.18); color: #8e8e93; border-color: rgba(142,142,147,.35); }
+
+.doc-chip {
+    display: inline-block; background: rgba(48,193,172,.12); color: var(--teal-dark);
+    border-radius: 12px; padding: 2px 10px; font-size: .72rem; font-weight: 600; margin: 2px 4px 2px 0;
+}
+.doc-chip-more { background: rgba(108,117,125,.15); color: var(--text-muted); }
