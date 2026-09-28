@@ -108,3 +108,101 @@
 
 /* Ícono deshabilitado (ej. editar cuando ya está realizado/cancelado) */
 .btn-icon.is-disabled { opacity: .35; cursor: not-allowed; }
+
+/* ==========================================================================
+   AÑADIR AL FINAL DE resources/css/user.css
+   (si ya habías pegado la versión anterior, BÓRRALA y pega esta)
+   Nueva solicitud: servicios en lista vertical + documento opcional (Sí/No)
+   Reutiliza tu .service-check y .check-icon; solo agrega lo nuevo.
+   ========================================================================== */
+
+/* Mensaje de error pequeño (teléfono y documentos) */
+.field-error {
+    display: block;
+    margin-top: 4px;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #ff3b30;
+}
+
+/* ---- Lista vertical: cada servicio es una fila de 2 columnas ---- */
+.service-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.service-row {
+    display: grid;
+    /* Columnas FIJAS (siempre existen, aunque la 2 esté vacía):
+       así el nombre del servicio mide lo mismo marcado o sin marcar y no se "achica". */
+    grid-template-columns: minmax(210px, .9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: 10px 16px;
+}
+.service-row > .service-check { grid-column: 1; }
+
+/* Columna 2: agrupa "¿Enviar documento?" y el archivo.
+   flex-wrap: si no caben en una línea, el archivo baja solo (nunca se sale de la tarjeta). */
+.service-extra {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    min-width: 0;
+}
+
+/* ---- ¿Enviar documento? Sí / No ---- */
+/* Oculto por defecto; aparece cuando el servicio está marcado (mismo truco :has que ya usas) */
+.doc-option {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+.service-row:has(.service-cb:checked) .doc-option { display: flex; }
+
+.doc-question {
+    font-size: .8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.yes-no {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg);
+}
+.yn-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 16px;
+    border-radius: 16px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color .2s, color .2s;
+}
+.yn-btn.is-active[data-choice="no"] { background: rgba(108, 117, 125, .2); color: var(--text-main); }
+.yn-btn.is-active[data-choice="si"] { background: var(--teal); color: #fff; }
+.yn-btn:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+
+/* ---- Archivo: solo si eligió Sí (la clase .wants-doc la pone user-create.js) ---- */
+.doc-upload {
+    display: none;
+    flex: 1 1 200px;   /* ocupa el espacio libre; si no hay 200px, baja a otra línea */
+    min-width: 0;
+}
+.service-row.wants-doc .doc-upload { display: block; }
+.doc-upload .form-control { padding: 6px 10px; font-size: .85rem; }
+
+/* Móvil: todo apilado */
+@media (max-width: 767.98px) {
+    .service-row { grid-template-columns: 1fr; }
+    .service-row > .service-check,
+    .service-extra { grid-column: 1; }
+}
