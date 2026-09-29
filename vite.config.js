@@ -16,8 +16,8 @@ export default defineConfig({
                 'resources/js/user.js',
                 'resources/js/navigationAdmin.js',
                 'resources/js/navigationUser.js',
-                'resources/css/user-create.css',
                 'resources/js/user-create.js',
+                'resources/js/user-edit.js'
             ],
             refresh: true,
         }),

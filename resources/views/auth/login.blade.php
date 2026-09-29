@@ -57,17 +57,17 @@
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label class="form-label">RUC (Opcional)</label>
-                        <input type="text" id="regRuc" class="form-input" placeholder="20123456789">
+                        <input type="text" id="regRuc" class="form-input" placeholder="20123456789" maxlength="11" inputmode="numeric">
                     </div>
                     <div class="form-group">
                         <label class="form-label">DNI</label>
-                        <input type="text" id="regDni" class="form-input" placeholder="70000000" maxlength="8" required>
+                        <input type="text" id="regDni" class="form-input" placeholder="87654321" maxlength="8" inputmode="numeric" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" data-i18n="name_label">Nombre completo</label>
-                    <input type="text" id="regName" class="form-input" placeholder="Ej. Juan Pérez" required>
+                    <input type="text" id="regName" class="form-input" placeholder="Juan Luis Pérez Lopez" required>
                 </div>
 
                 <div class="form-group">

@@ -28,6 +28,8 @@
         'resources/js/user.js',
         'resources/js/navigationUser.js',
         'resources/js/user-create.js',
+        'resources/js/user-create.js',
+        'resources/js/user-edit.js',   // <-- nueva
     ])
 </head>
 <body>
