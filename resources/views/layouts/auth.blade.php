@@ -13,6 +13,14 @@
 
     @vite(['resources/css/login.css', 'resources/js/login.js'])
     @stack('styles')
+<!--Enviar los formularios a la bd  -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+    if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+</script>
+<!-- Script otro -->
 </head>
 <body>
 
@@ -25,9 +33,6 @@
 
     <!-- Controles Flotantes Superior Derecho (Idioma y Tema) -->
     <div class="top-controls">
-        <button id="btnLangToggle" class="control-btn" type="button">
-            <i class="fa-solid fa-globe"></i> <span id="langText">ES</span>
-        </button>
         <button id="btnThemeToggle" class="control-btn" type="button">
             <i class="fa-solid fa-moon" id="themeIcon"></i> <span id="themeText">Oscuro</span>
         </button>

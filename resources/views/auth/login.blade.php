@@ -27,14 +27,16 @@
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label class="form-label" data-i18n="email_label">Correo electrónico</label>
-                    <input type="email" id="loginEmail" class="form-input" placeholder="correo@empresa.com" required>
+                    <label class="form-label" for="loginEmail" data-i18n="email_label">Correo electrónico</label>
+                    <input type="email" id="loginEmail" name="email" class="form-input"
+                           placeholder="correo@empresa.com" autocomplete="username" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" data-i18n="pwd_label">Contraseña</label>
+                    <label class="form-label" for="loginPassword" data-i18n="pwd_label">Contraseña</label>
                     <div class="input-wrapper">
-                        <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                        <input type="password" id="loginPassword" name="password" class="form-input"
+                               placeholder="••••••••" autocomplete="current-password" required>
                         <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('loginPassword')">
                             <i class="fa-solid fa-eye"></i>
                         </button>
@@ -45,7 +47,7 @@
             </form>
         </div>
 
-        <!-- 2. FORMULARIO DE REGISTRO -->
+        <!-- 2. FORMULARIO DE REGISTRO (todos los campos son obligatorios) -->
         <div id="registerBlock" class="form-block d-none">
             <h2 data-i18n="reg_title">Crear Cuenta</h2>
             <p class="subtitle" data-i18n="reg_sub">Regístrate para solicitar evaluaciones corporativas</p>
@@ -53,47 +55,62 @@
             <div id="registerError" class="alert-error"></div>
             <div id="registerSuccess" class="alert-success" data-i18n="reg_success">¡Registro Exitoso! Redirigiendo...</div>
 
-            <form id="registerForm">
+            <form id="registerForm" novalidate>
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label">RUC (Opcional)</label>
-                        <input type="text" id="regRuc" class="form-input" placeholder="20123456789" maxlength="11" inputmode="numeric">
+                        <label class="form-label" for="regRuc">RUC</label>
+                        {{-- No existe token de autocompletado estándar para RUC/DNI => autocomplete="off" --}}
+                        <input type="text" id="regRuc" name="ruc" class="form-input" placeholder="20123456789"
+                               maxlength="11" inputmode="numeric" autocomplete="off" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">DNI</label>
-                        <input type="text" id="regDni" class="form-input" placeholder="87654321" maxlength="8" inputmode="numeric" required>
+                        <label class="form-label" for="regDni">DNI</label>
+                        <input type="text" id="regDni" name="dni" class="form-input" placeholder="87654321"
+                               maxlength="8" inputmode="numeric" autocomplete="off" required>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-i18n="name_label">Nombre completo</label>
-                    <input type="text" id="regName" class="form-input" placeholder="Juan Luis Pérez Lopez" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-i18n="email_label">Correo electrónico</label>
-                    <input type="email" id="regEmail" class="form-input" placeholder="correo@empresa.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-i18n="phone_label">Teléfono</label>
-                    <input type="tel" id="regPhone" class="form-input" placeholder="999 999 999" required>
                 </div>
 
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label" data-i18n="pwd_label">Contraseña</label>
+                        <label class="form-label" for="regNames" data-i18n="names_label">Nombres</label>
+                        <input type="text" id="regNames" name="names" class="form-input" placeholder="Juan Luis"
+                               autocomplete="given-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="regSurnames" data-i18n="surnames_label">Apellidos</label>
+                        <input type="text" id="regSurnames" name="surnames" class="form-input" placeholder="Pérez López"
+                               autocomplete="family-name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regEmail" data-i18n="email_label">Correo electrónico</label>
+                    <input type="email" id="regEmail" name="email" class="form-input"
+                           placeholder="correo@empresa.com" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regPhone" data-i18n="phone_label">Teléfono</label>
+                    <input type="tel" id="regPhone" name="phone" class="form-input" placeholder="999999999"
+                           maxlength="9" inputmode="numeric" autocomplete="tel-national" required>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="regPassword" data-i18n="pwd_label">Contraseña</label>
                         <div class="input-wrapper">
-                            <input type="password" id="regPassword" class="form-input" placeholder="••••••••" required>
+                            <input type="password" id="regPassword" name="password" class="form-input"
+                                   placeholder="••••••••" autocomplete="new-password" required>
                             <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('regPassword')">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" data-i18n="confirm_pwd">Confirmar</label>
+                        <label class="form-label" for="regPasswordConfirm" data-i18n="confirm_pwd">Confirmar</label>
                         <div class="input-wrapper">
-                            <input type="password" id="regPasswordConfirm" class="form-input" placeholder="••••••••" required>
+                            <input type="password" id="regPasswordConfirm" name="password_confirmation" class="form-input"
+                                   placeholder="••••••••" autocomplete="new-password" required>
                             <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('regPasswordConfirm')">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
@@ -101,7 +118,18 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" data-i18n="reg_btn">Registrarse</button>
+                {{-- Términos y condiciones: el botón "Registrarse" queda deshabilitado hasta marcarlo (login.js).
+                     Coloca el PDF real en public/docs/terminos-y-condiciones.pdf --}}
+                <label class="terms-check" for="regTerms">
+                    <input type="checkbox" id="regTerms" name="terms" required>
+                    <span>
+                        <span data-i18n="terms_prefix">Acepto los</span>
+                        <a href="{{ asset('docs/terminos-y-condiciones.pdf') }}" target="_blank" rel="noopener"
+                           data-i18n="terms_link">términos y condiciones</a>
+                    </span>
+                </label>
+
+                <button type="submit" id="btnRegister" class="btn btn-primary" data-i18n="reg_btn" disabled>Registrarse</button>
             </form>
         </div>
 
