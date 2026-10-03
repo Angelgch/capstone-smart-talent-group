@@ -12,7 +12,7 @@
     --text-muted: #6c757d;
     --border: rgba(0, 0, 0, 0.12);
     --radius-md: 10px;
-    --radius-lg: 16px;
+/*    --radius-lg: 16px;*/
     --radius-xl: 30px;
     --transition: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }

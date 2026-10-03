@@ -8,10 +8,10 @@
     <div class="auth-toggle-pill">
         <div class="pill-slider" id="pillSlider"></div>
         <button type="button" id="btnTabLogin" class="pill-btn active" onclick="switchTab('login')">
-            <i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="tab_login">Ingresar</span>
+            <i class="fa-solid fa-right-to-bracket"></i> <span>Ingresar</span>
         </button>
         <button type="button" id="btnTabReg" class="pill-btn" onclick="switchTab('register')">
-            <i class="fa-solid fa-user-plus"></i> <span data-i18n="tab_register">Registrarse</span>
+            <i class="fa-solid fa-user-plus"></i> <span>Registrarse</span>
         </button>
     </div>
 
@@ -19,21 +19,22 @@
     <div class="forms-container">
 
         <!-- 1. FORMULARIO DE INGRESO -->
-        <div id="loginBlock" class="form-block show">
-            <h2 data-i18n="login_title">Iniciar sesión</h2>
-            <p class="subtitle" data-i18n="login_sub">Accede con tus credenciales de Smart Talent</p>
+        <div id="loginBlock" class="form-block">
+            <h2>Iniciar sesión</h2>
+            <p class="subtitle">Accede con tus credenciales de Smart Talent</p>
 
             <div id="loginError" class="alert-error"></div>
 
-            <form id="loginForm">
+            <form id="loginForm" action="{{ route('login.attempt') }}" method="POST">
+                @csrf
                 <div class="form-group">
-                    <label class="form-label" for="loginEmail" data-i18n="email_label">Correo electrónico</label>
+                    <label class="form-label" for="loginEmail">Correo electrónico</label>
                     <input type="email" id="loginEmail" name="email" class="form-input"
                            placeholder="correo@empresa.com" autocomplete="username" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="loginPassword" data-i18n="pwd_label">Contraseña</label>
+                    <label class="form-label" for="loginPassword">Contraseña</label>
                     <div class="input-wrapper">
                         <input type="password" id="loginPassword" name="password" class="form-input"
                                placeholder="••••••••" autocomplete="current-password" required>
@@ -43,19 +44,20 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" data-i18n="login_btn">Ingresar al sistema</button>
+                <button type="submit" class="btn btn-primary">Ingresar al sistema</button>
             </form>
         </div>
 
         <!-- 2. FORMULARIO DE REGISTRO (todos los campos son obligatorios) -->
         <div id="registerBlock" class="form-block d-none">
-            <h2 data-i18n="reg_title">Crear Cuenta</h2>
-            <p class="subtitle" data-i18n="reg_sub">Regístrate para solicitar evaluaciones corporativas</p>
+            <h2>Crear Cuenta</h2>
+            <p class="subtitle">Regístrate para solicitar evaluaciones corporativas</p>
 
             <div id="registerError" class="alert-error"></div>
-            <div id="registerSuccess" class="alert-success" data-i18n="reg_success">¡Registro Exitoso! Redirigiendo...</div>
+            <div id="registerSuccess" class="alert-success">¡Registro Exitoso! Redirigiendo...</div>
 
-            <form id="registerForm" novalidate>
+            <form id="registerForm" action="{{ route('register.store') }}" method="POST" novalidate>
+                @csrf
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label class="form-label" for="regRuc">RUC</label>
@@ -72,32 +74,32 @@
 
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label" for="regNames" data-i18n="names_label">Nombres</label>
+                        <label class="form-label" for="regNames">Nombres</label>
                         <input type="text" id="regNames" name="names" class="form-input" placeholder="Juan Luis"
                                autocomplete="given-name" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="regSurnames" data-i18n="surnames_label">Apellidos</label>
+                        <label class="form-label" for="regSurnames">Apellidos</label>
                         <input type="text" id="regSurnames" name="surnames" class="form-input" placeholder="Pérez López"
                                autocomplete="family-name" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="regEmail" data-i18n="email_label">Correo electrónico</label>
+                    <label class="form-label" for="regEmail">Correo electrónico</label>
                     <input type="email" id="regEmail" name="email" class="form-input"
                            placeholder="correo@empresa.com" autocomplete="email" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="regPhone" data-i18n="phone_label">Teléfono</label>
+                    <label class="form-label" for="regPhone">Teléfono</label>
                     <input type="tel" id="regPhone" name="phone" class="form-input" placeholder="999999999"
                            maxlength="9" inputmode="numeric" autocomplete="tel-national" required>
                 </div>
 
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label" for="regPassword" data-i18n="pwd_label">Contraseña</label>
+                        <label class="form-label" for="regPassword">Contraseña</label>
                         <div class="input-wrapper">
                             <input type="password" id="regPassword" name="password" class="form-input"
                                    placeholder="••••••••" autocomplete="new-password" required>
@@ -107,7 +109,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="regPasswordConfirm" data-i18n="confirm_pwd">Confirmar</label>
+                        <label class="form-label" for="regPasswordConfirm">Confirmar</label>
                         <div class="input-wrapper">
                             <input type="password" id="regPasswordConfirm" name="password_confirmation" class="form-input"
                                    placeholder="••••••••" autocomplete="new-password" required>
@@ -123,13 +125,13 @@
                 <label class="terms-check" for="regTerms">
                     <input type="checkbox" id="regTerms" name="terms" required>
                     <span>
-                        <span data-i18n="terms_prefix">Acepto los</span>
+                        <span>Acepto los</span>
                         <a href="{{ asset('docs/terminos-y-condiciones.pdf') }}" target="_blank" rel="noopener"
-                           data-i18n="terms_link">términos y condiciones</a>
+                          >términos y condiciones</a>
                     </span>
                 </label>
 
-                <button type="submit" id="btnRegister" class="btn btn-primary" data-i18n="reg_btn" disabled>Registrarse</button>
+                <button type="submit" id="btnRegister" class="btn btn-primary" disabled>Registrarse</button>
             </form>
         </div>
 
