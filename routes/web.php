@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -18,10 +19,23 @@ use App\Support\DemoData;
 // 1. RUTAS DE AUTENTICACIÓN Y ACCESO GENERAL
 // ==========================================
 
-// Ruta raíz: Muestra la vista de inicio de sesión (Login)
+// Ruta raíz: Login / Registro. Si ya hay sesión, manda directo al panel según el rol.
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route(Auth::user()->isAdmin() ? 'admin.dashboard' : 'user.dashboard');
+    }
+
     return view('auth.login');
 })->name('login');
+
+// Login y registro reales (los llama login.js con fetch). Limitados para frenar intentos masivos.
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:6,1')
+    ->name('login.attempt');
+
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware('throttle:10,1')
+    ->name('register.store');
 
 // Ruta POST para cerrar sesión de manera segura (Invalida sesión y regenera token CSRF)
 Route::post('/logout', function (Request $request) {
@@ -37,8 +51,9 @@ Route::redirect('/admin', '/admin/dashboard');
 
 // ==========================================
 // 2. PANEL DE USUARIO (CLIENTE / POSTULANTE)
+//    Solo con sesión iniciada y role = user (otro rol => 403)
 // ==========================================
-Route::prefix('user')->name('user.')->group(function () {
+Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('/dashboard', function () {
         $all = collect(DemoData::userRequests())->sortByDesc('date')->values();
@@ -90,8 +105,9 @@ Route::prefix('user')->name('user.')->group(function () {
 
 // ==========================================
 // 3. PANEL DE ADMINISTRADOR
+//    Solo con sesión iniciada y role = admin (otro rol => 403)
 // ==========================================
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/dashboard', function () {
     $all = collect(DemoData::requests())->sortByDesc('date')->values();

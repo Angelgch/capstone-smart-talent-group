@@ -43,6 +43,7 @@ class DemoData
                     'crediticias'  => '72830595_crediticias.pdf',
                     'record'       => '72830595_record_laboral.pdf',
                     'academicas'   => '72830595_academicas.pdf',
+                    'documents' => ['academicas' => '72830595_certificado_estudios.pdf'],
                 ],
                 'direccion' => 'Av. Bertolotto 752, San Miguel', 'referencia' => '', 'observaciones' => 'Validar estudios universitarios',
             ],

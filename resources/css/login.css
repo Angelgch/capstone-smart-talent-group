@@ -12,7 +12,7 @@
     --text-muted: #6c757d;
     --border: rgba(0, 0, 0, 0.12);
     --radius-md: 10px;
-    --radius-lg: 16px;
+/*    --radius-lg: 16px;*/
     --radius-xl: 30px;
     --transition: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -324,4 +324,48 @@ body {
     .auth-sidebar { border-right: none; border-bottom: 4px solid var(--stg-teal); padding: 40px 20px; }
     .auth-content { padding: 40px 20px; }
     .demo-box-floating { position: static; margin: 15px auto 0; max-width: 300px; text-align: center; }
+}
+
+/* ==========================================================================
+   AÑADIR AL FINAL DE resources/css/login.css
+   Términos y condiciones + botón deshabilitado
+   ========================================================================== */
+
+.terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.terms-check input {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--stg-teal);
+    cursor: pointer;
+}
+
+.terms-check a {
+    color: var(--stg-teal-dark);
+    font-weight: 600;
+}
+
+[data-theme="dark"] .terms-check a { color: var(--stg-teal); }
+
+/* Botón sin poder usarse (ej. "Registrarse" antes de aceptar los términos) */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.btn-primary:disabled:hover {
+    background: var(--stg-teal);
+    transform: none;
 }
