@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+// OJO: todavía lo usan 8 rutas de web.php (dashboards, solicitudes, matriz del admin).
+// Se borra al FINAL, cuando todas lean de la BD. services() ya no se usa (ahora es ServiceCatalog).
+
 class DemoData
 {
     // Un servicio que NO aparece en 'services' de un candidato = No Solicitado

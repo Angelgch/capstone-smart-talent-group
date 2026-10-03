@@ -48,4 +48,10 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    // Solicitudes que creó este usuario
+    public function verificationRequests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(VerificationRequest::class);
+    }
 }

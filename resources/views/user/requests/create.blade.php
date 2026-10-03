@@ -3,7 +3,7 @@
 @section('page-title', 'Nueva Solicitud')
 
 @section('content')
-    @include('user.requests._form', [
+    @include('user.requests.formCreate', [
         'candidate' => null,
         'return'    => route('user.requests.index'),
         'message'   => '✅ Solicitud enviada (borrador, aún sin base de datos)',

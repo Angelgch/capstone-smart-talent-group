@@ -1,68 +1,70 @@
+{{-- resources/views/admin/companies/matrix.blade.php
+     MATRIZ = tabla RESUMEN de las solicitudes de la empresa. El detalle completo está en show.blade.php --}}
 @extends('layouts.admin')
-@section('title', 'Matriz de Candidatos')
-@section('page-title', 'Matriz — ' . $company['name'])
+@section('title', 'Matriz de Solicitudes')
+@section('page-title', 'Matriz — ' . $company->name)
 
 @section('content')
 
-<div class="filter-section">
-    <input type="text" class="form-control" style="max-width:320px" placeholder="Buscar por DNI, nombre o apellido...">
-    <select class="form-select" style="max-width:200px">
-        <option>Todos los estados</option>
-        <option>En Proceso</option>
-        <option>Realizado</option>
-        <option>Cancelado</option>
+{{-- Buscador y filtro: ahora SÍ filtran (GET ?q=...&status=...), lo resuelve el controlador --}}
+<form method="GET" action="{{ route('admin.companies.matrix', $company) }}" class="filter-section">
+    <input type="text" name="q" value="{{ request('q') }}" class="form-control" style="max-width:320px"
+           placeholder="Buscar por DNI, nombre o apellido...">
+
+    <select name="status" class="form-select" style="max-width:200px">
+        <option value="">Todos los estados</option>
+        @foreach (['en_espera', 'en_progreso', 'realizado', 'cancelado'] as $st)
+            <option value="{{ $st }}" @selected(request('status') === $st)>{{ \App\Support\StatusLabel::general($st) }}</option>
+        @endforeach
     </select>
-    <button class="btn btn-gestionar"><i class="fas fa-search me-1"></i> Filtrar</button>
-    <button class="btn btn-excel ms-auto"><i class="fas fa-file-excel me-1"></i> Descargar Excel</button>
-</div>
+
+    <button type="submit" class="btn btn-gestionar"><i class="fas fa-search me-1"></i> Filtrar</button>
+
+    @if (request()->filled('q') || request()->filled('status'))
+        <a href="{{ route('admin.companies.matrix', $company) }}" class="btn btn-outline-secondary">Limpiar</a>
+    @endif
+
+    <a href="#" class="btn btn-excel ms-auto" onclick="devAlert(event)"><i class="fas fa-file-excel me-1"></i> Descargar Excel</a>
+</form>
 
 <div class="table-custom-container">
     <table class="table-matrix">
         <thead>
             <tr>
-                <th>DNI</th>
-                <th>Nombres y Apellidos</th>
+                <th>N° Solicitud</th>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                <th>Candidato</th>
                 <th>Estado</th>
-                @foreach ($services as $s)
-                    <th>{{ $s['short'] }}</th>
-                @endforeach
-                <th>Dirección</th>
-                <th>Referencia</th>
-                <th>Observaciones</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($candidates as $c)
+            @forelse ($solicitudes as $s)
             <tr>
-                <td>{{ $c['dni'] }}</td>
-                <td>{{ $c['name'] }}</td>
-                <td><x-status-badge :status="$c['status']" /></td>
-
-                @foreach ($services as $key => $s)
-                    <td><x-status-badge :status="$c['services'][$key] ?? null" /></td>
-                @endforeach
-
-                @foreach (['direccion', 'referencia', 'observaciones'] as $field)
-                    <td>
-                        @if ($c[$field])
-                            <span class="cell-text" title="{{ $c[$field] }}">{{ $c[$field] }}</span>
-                        @else
-                            <x-status-badge />
-                        @endif
-                    </td>
-                @endforeach
-
+                <td class="fw-semibold">{{ $s->code }}</td>
+                <td>{{ $s->created_at->format('d/m/Y') }}</td>
+                <td>{{ $s->user->name }}</td>
                 <td>
-                    <a href="{{ route('admin.companies.edit', [$company['id'], $c['dni']]) }}" class="btn-icon btn-icon-edit" title="Editar">
-                        <i class="fas fa-pen"></i>
+                    <div class="fw-semibold">{{ $s->full_name }}</div>
+                    <small class="text-muted">DNI: {{ $s->dni }}</small>
+                </td>
+                <td><x-request-status :status="$s->status" kind="general" /></td>
+                <td>
+                    {{-- Ver detalle (ahí también se editará) --}}
+                    <a href="{{ route('admin.companies.requests.show', [$company, $s]) }}" class="btn-icon btn-icon-view" title="Ver detalle">
+                        <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('admin.companies.downloads', [$company['id'], $c['dni']]) }}" class="btn-icon btn-icon-files" title="Documentos">
-                        <i class="fas fa-warehouse"></i>
+                    <a href="#" class="btn-icon btn-icon-files" title="Descargar informes" onclick="devAlert(event)">
+                        <i class="fas fa-download"></i>
                     </a>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">No hay solicitudes para mostrar.</td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
 </div>

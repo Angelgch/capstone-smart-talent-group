@@ -1,7 +1,7 @@
 <?php
 
 // database/seeders/DatabaseSeeder.php  (reemplaza el que trae Laravel)
-// Crea el admin único y un usuario de prueba. Se puede correr varias veces sin duplicar.
+// Crea el admin único, un usuario de prueba, las empresas y solicitudes de ejemplo. Se puede correr varias veces sin duplicar.
 
 namespace Database\Seeders;
 
@@ -12,6 +12,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Empresas de ejemplo (para el index de companies del admin)
+        $this->call(CompanySeeder::class);
+
         // El ÚNICO admin del sistema. forceFill porque "role" no es asignable en masa (ver User.php)
         User::firstOrNew(['email' => 'admin@gmail.com'])->forceFill([
             'names'             => 'Administrador',
@@ -32,5 +35,8 @@ class DatabaseSeeder extends Seeder
             'role'              => 'user',
             'terms_accepted_at' => now(),
         ])->save();
+
+        // Solicitudes de ejemplo por empresa (va al final: necesita que user@gmail.com ya exista)
+        $this->call(DemoRequestSeeder::class);
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\CompanyController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Support\DemoData;
+use App\Support\ServiceCatalog;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,19 +68,19 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
                 'canceladas' => $all->where('status', 'Cancelado')->count(),
             ],
             'requests' => $all->take(5), // máximo 5
-            'services' => DemoData::services(),
+            'services' => ServiceCatalog::all(),
         ]);
     })->name('dashboard');
 
     Route::get('/requests', function () {
         return view('user.requests.index', [
             'candidates' => DemoData::userRequests(),
-            'services'   => DemoData::services(),
+            'services'   => ServiceCatalog::all(),
         ]);
     })->name('requests.index');
 
     Route::get('/requests/create', function () {
-        return view('user.requests.create', ['services' => DemoData::services()]);
+        return view('user.requests.create', ['services' => ServiceCatalog::all()]);
     })->name('requests.create');
 
     Route::get('/requests/{dni}/edit', function ($dni) {
@@ -91,13 +93,13 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
         $c['email']    = 'candidato@correo.com'; // demo
         $c['phone']    = '999 999 999';          // demo
 
-        return view('user.requests.edit', ['candidate' => $c, 'services' => DemoData::services()]);
+        return view('user.requests.edit', ['candidate' => $c, 'services' => ServiceCatalog::all()]);
     })->name('requests.edit');
 
     Route::get('/requests/{dni}/downloads', function ($dni) {
         return view('user.requests.downloads', [
             'candidate' => DemoData::candidate($dni),
-            'services'  => DemoData::services(),
+            'services'  => ServiceCatalog::all(),
         ]);
     })->name('requests.downloads');
 });
@@ -125,31 +127,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     ]);
 })->name('dashboard');
 
-    Route::get('/companies', function () {
-        return view('admin.companies.index', ['companies' => DemoData::companies()]);
-    })->name('companies.index');
-
-    Route::get('/companies/{company}/matrix', function ($company) {
-        return view('admin.companies.matrix', [
-            'company'    => DemoData::company($company),
-            'candidates' => DemoData::candidates(),
-            'services'   => DemoData::services(),
-        ]);
-    })->name('companies.matrix');
-
-    Route::get('/companies/{company}/candidates/{dni}/edit', function ($company, $dni) {
-        return view('admin.companies.edit', [
-            'company'   => DemoData::company($company),
-            'candidate' => DemoData::candidate($dni),
-            'services'  => DemoData::services(),
-        ]);
-    })->name('companies.edit');
-
-    Route::get('/companies/{company}/candidates/{dni}/downloads', function ($company, $dni) {
-        return view('admin.companies.downloads', [
-            'company'   => DemoData::company($company),
-            'candidate' => DemoData::candidate($dni),
-            'services'  => DemoData::services(),
-        ]);
-    })->name('companies.downloads');
+    // Empresas (ver Admin\CompanyController): lista -> matriz (resumen) -> detalle de la solicitud
+    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
+    Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');
 });
