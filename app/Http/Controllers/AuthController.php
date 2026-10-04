@@ -13,9 +13,9 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    /* ------------------------------------------------------------------
-       LOGIN: valida, intenta autenticar y devuelve a dónde redirigir según el rol
-       ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+LOGIN: valida, intenta autenticar y devuelve a dónde redirigir según el rol
+------------------------------------------------------------------ */
     public function login(Request $request): JsonResponse
     {
         // El correo siempre en minúsculas
@@ -40,10 +40,10 @@ class AuthController extends Controller
         return response()->json(['redirect' => $this->homeFor(Auth::user())]);
     }
 
-    /* ------------------------------------------------------------------
-       REGISTRO: crea un usuario con role = 'user' (el rol NO viene del formulario)
-       y lo deja con la sesión iniciada.
-       ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+REGISTRO: crea un usuario con role = 'user' (el rol NO viene del formulario)
+y lo deja con la sesión iniciada.
+------------------------------------------------------------------ */
     public function register(Request $request): JsonResponse
     {
         $request->merge(['email' => Str::lower((string) $request->input('email'))]);
@@ -95,9 +95,10 @@ class AuthController extends Controller
         return response()->json(['redirect' => $this->homeFor($user)], 201);
     }
 
-    /* ------------------------------------------------------------------
-       A dónde va cada rol al entrar. Ruta relativa (false) para no depender de APP_URL.
-       ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+A dónde va cada rol al entrar. Ruta relativa (false) para no depender de APP_URL.
+------------------------------------------------------------------ */
+    
     private function homeFor(User $user): string
     {
         return route($user->isAdmin() ? 'admin.dashboard' : 'user.dashboard', [], false);

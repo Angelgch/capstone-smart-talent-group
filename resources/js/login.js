@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ==========================================================================
-   CONFIG
-   ========================================================================== */
+CONFIG
+========================================================================== */
 const RUC_DIGITS = 11;
 const DNI_DIGITS = 8;
 const PHONE_MAX_DIGITS = 9; // teléfono: exactamente 9 dígitos (después se cambiará por selector de país con bandera)
@@ -15,8 +15,8 @@ const PASSWORD_MIN = 8;
 const REDIRECT_DELAY_MS = 1200; // pausa para que se vea "¡Registro Exitoso!" antes de entrar
 
 /* ==========================================================================
-   COMUNICACIÓN CON LARAVEL (POST en JSON, con token CSRF)
-   ========================================================================== */
+COMUNICACIÓN CON LARAVEL (POST en JSON, con token CSRF)
+========================================================================== */
 async function postJson(url, payload) {
     try {
         const res = await fetch(url, {
@@ -48,8 +48,8 @@ function serverMessage({ status, data }) {
 }
 
 /* ==========================================================================
-   1. LOGIN (el servidor valida y devuelve a qué panel ir según el rol)
-   ========================================================================== */
+1. LOGIN (el servidor valida y devuelve a qué panel ir según el rol)
+========================================================================== */
 function initLoginForm() {
     const loginForm = document.getElementById("loginForm");
     if (!loginForm) return;

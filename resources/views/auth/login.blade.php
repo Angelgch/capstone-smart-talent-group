@@ -30,14 +30,14 @@
                 <div class="form-group">
                     <label class="form-label" for="loginEmail">Correo electrónico</label>
                     <input type="email" id="loginEmail" name="email" class="form-input"
-                           placeholder="correo@empresa.com" autocomplete="username" required>
+                        placeholder="correo@empresa.com" autocomplete="username" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="loginPassword">Contraseña</label>
                     <div class="input-wrapper">
                         <input type="password" id="loginPassword" name="password" class="form-input"
-                               placeholder="••••••••" autocomplete="current-password" required>
+                            placeholder="••••••••" autocomplete="current-password" required>
                         <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('loginPassword')">
                             <i class="fa-solid fa-eye"></i>
                         </button>
