@@ -79,6 +79,10 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
         ]);
     })->name('dashboard');
 
+      // Perfil y configuración (provisionales: "Módulo en desarrollo")//ULTIMO AÑADIDO
+    Route::view('/profile', 'user.profile')->name('profile');
+    Route::view('/configuration', 'user.configuration')->name('configuration');
+
     // Solicitudes (ver User\RequestController): matriz -> crear/guardar -> detalle
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
     Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
@@ -130,6 +134,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         'requests' => $all->take(5), // máximo 5: al entrar una nueva, la más vieja sale
     ]);
 })->name('dashboard');
+
+        // Perfil y configuración (provisionales: "Módulo en desarrollo")//ULTIMO AÑADIDO
+    Route::view('/profile', 'admin.profile')->name('profile');
+    Route::view('/configuration', 'admin.configuration')->name('configuration');
 
     // Empresas (ver Admin\CompanyController): lista -> registrar -> matriz (resumen) -> detalle de la solicitud
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');

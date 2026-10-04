@@ -66,13 +66,13 @@
             <i class="fas fa-plus-circle"></i>
             <span class="sidebar-text">Nueva Solicitud</span>
         </a>
-        <a href="#" onclick="devAlert(event)" title="Mi Perfil">
+        <a href="{{ route('user.profile') }}" title="Mi Perfil">
             <i class="fas fa-user-circle"></i>
             <span class="sidebar-text">Mi Perfil</span>
         </a>
-        <a href="#" onclick="devAlert(event)" title="Configuracion">
+        <a href="{{ route('user.configuration') }}" title="Configuración">
             <i class="fas fa-cog"></i>
-            <span class="sidebar-text">Configuracion</span>
+            <span class="sidebar-text">Configuración</span>
         </a>
 
     </nav>

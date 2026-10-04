@@ -41,7 +41,10 @@
             <tr>
                 <th>N° Solicitud</th>
                 <th>Fecha</th>
-                <th>Candidato</th>
+                <th>Responsable</th>
+                <th>DNI</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -51,10 +54,10 @@
             <tr>
                 <td class="fw-semibold">{{ $s->code }}</td>
                 <td>{{ $s->created_at->format('d/m/Y') }}</td>
-                <td>
-                    <div class="fw-semibold">{{ $s->full_name }}</div>
-                    <small class="text-muted">DNI: {{ $s->dni }}</small>
-                </td>
+                <td>{{ $s->user->name }}</td>
+                <td>{{ $s->dni }}</td>
+                <td>{{ $s->names }}</td>
+                <td>{{ $s->surnames }}</td>
                 <td><x-request-status :status="$s->status" kind="general" /></td>
                 <td>
                     {{-- Botón azul: ver detalle --}}
@@ -76,7 +79,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-4">Todavía no tienes solicitudes.</td>
+                <td colspan="8" class="text-center text-muted py-4">Todavía no tienes solicitudes.</td>
             </tr>
             @endforelse
         </tbody>

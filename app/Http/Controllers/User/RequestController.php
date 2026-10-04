@@ -27,6 +27,7 @@ class RequestController extends Controller
             ? $request->status : null;
 
         $solicitudes = VerificationRequest::where('user_id', $request->user()->id)
+    ->with('user')
             // cuántos servicios ya tienen informe (para activar el botón de descarga)
             ->withCount(['services as results_count' => fn ($q) =>
                 $q->whereHas('documents', fn ($d) => $d->where('type', 'informe_admin'))])

@@ -63,13 +63,13 @@
             <i class="fas fa-folder-open"></i>
             <span class="sidebar-text">Empresas</span>
         </a>
-        <a href="#" onclick="devAlert(event)" title="Mi Perfil">
+        <a href="{{ route('admin.profile') }}" title="Mi Perfil">
             <i class="fas fa-user-circle"></i>
             <span class="sidebar-text">Mi Perfil</span>
         </a>
-        <a href="#" onclick="devAlert(event)" title="Configuracion">
+        <a href="{{ route('admin.configuration') }}" title="Configuración">
             <i class="fas fa-cog"></i>
-            <span class="sidebar-text">Configuracion</span>
+            <span class="sidebar-text">Configuración</span>
         </a>
 
 
