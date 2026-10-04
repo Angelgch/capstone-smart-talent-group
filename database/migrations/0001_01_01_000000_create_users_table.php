@@ -1,11 +1,8 @@
 <?php
 
-// database/migrations/0001_01_01_000000_create_users_table.php
-// REEMPLAZA la migración de usuarios que trae Laravel (proyecto nuevo: todavía no hay datos).
-//
-// users = Tabla `users` del Prompt Maestro:
-//   dni, names, surnames, email (único), ruc, phone, password, role (admin | user)
-// + terms_accepted_at: cuándo aceptó los términos y condiciones en el registro.
+// database/migrations/0001_01_01_000000_create_users_table.php   (REEMPLAZA la que trae Laravel)
+// TABLA 2 de 5: USUARIOS del sistema. Cada usuario pertenece a una empresa (company_id);
+// el admin general NO pertenece a ninguna (company_id = null).
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,14 +15,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
-            // dni, ruc y phone son nullable SOLO a nivel de BD, porque el admin no los tiene.
-            // En el registro de usuarios son OBLIGATORIOS (se validan en el backend).
-            $table->string('dni', 8)->nullable()->unique();   // 8 dígitos, solo números
+            // Empresa del usuario. No se puede borrar una empresa que tenga usuarios.
+            $table->foreignId('company_id')->nullable()->constrained()->restrictOnDelete();
+
+            // dni y phone son nullable SOLO a nivel de BD (el admin no los tiene);
+            // en el registro de usuarios son OBLIGATORIOS (los valida AuthController).
+            $table->string('dni', 8)->nullable()->unique();
             $table->string('names', 100);
             $table->string('surnames', 100);
             $table->string('email')->unique();
-            $table->string('ruc', 11)->nullable()->index();   // libre y NO único: varios usuarios pueden compartir RUC
-            $table->string('phone', 15)->nullable();          // el registro exige 9 dígitos; 15 queda listo para otros países
+            $table->string('phone', 15)->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
 

@@ -10,7 +10,7 @@
         'referencia'    => 'Referencia domiciliaria',
         'observaciones' => 'Observaciones a tener en cuenta',
     ];
-    $statuses = ['No Solicitado', 'En Proceso', 'Realizado', 'Cancelado'];
+    $statuses = ['No Solicitado', 'En Espera' , 'En Proceso', 'Realizado', 'Cancelado'];
 @endphp
 
 <div class="edit-header">

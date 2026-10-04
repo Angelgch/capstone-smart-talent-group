@@ -3,9 +3,6 @@
 @section('page-title', 'Nueva Solicitud')
 
 @section('content')
-    @include('user.requests._form', [
-        'candidate' => null,
-        'return'    => route('user.requests.index'),
-        'message'   => '✅ Solicitud enviada (borrador, aún sin base de datos)',
-    ])
+    {{-- $services y $extras llegan desde User\RequestController@create --}}
+    @include('user.requests.formCreate')
 @endsection

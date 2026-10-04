@@ -3,7 +3,7 @@
 @section('page-title', 'Editar — ' . $candidate['name'])
 
 @section('content')
-    @include('user.requests._form', [
+    @include('user.requests.formCreate', [
         'candidate' => $candidate,
         'return'    => route('user.requests.index'),
         'message'   => '✅ Cambios guardados (borrador, aún sin base de datos)',

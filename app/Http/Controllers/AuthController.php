@@ -1,10 +1,11 @@
 <?php
 
-// app/Http/Controllers/AuthController.php
+// app/Http/Controllers/AuthController.php   (REEMPLAZA el anterior)
 // Registro y login reales contra la BD. Responde JSON porque login.js usa fetch (la página no se recarga).
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,25 +42,26 @@ class AuthController extends Controller
     }
 
     /* ------------------------------------------------------------------
-       REGISTRO: crea un usuario con role = 'user' (el rol NO viene del formulario)
-       y lo deja con la sesión iniciada.
+       REGISTRO: el RUC debe ser de una empresa YA registrada. El backend busca esa empresa
+       y guarda su id en el usuario (company_id). El rol siempre es 'user'.
        ------------------------------------------------------------------ */
     public function register(Request $request): JsonResponse
     {
         $request->merge(['email' => Str::lower((string) $request->input('email'))]);
 
         $data = $request->validate([
-            'ruc'      => ['required', 'digits:11'],                       // libre y repetible
+            'ruc'      => ['required', 'digits:11', 'exists:companies,ruc'],   // la empresa tiene que existir
             'dni'      => ['required', 'digits:8', 'unique:users,dni'],
             'names'    => ['required', 'string', 'max:100', "regex:/^[\pL\s.'-]+$/u"],
             'surnames' => ['required', 'string', 'max:100', "regex:/^[\pL\s.'-]+$/u"],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone'    => ['required', 'digits:9'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],    // usa password_confirmation
+            'password' => ['required', 'string', 'min:8', 'confirmed'],        // usa password_confirmation
             'terms'    => ['accepted'],
         ], [
             'ruc.required'       => 'El RUC es obligatorio.',
             'ruc.digits'         => 'El RUC debe tener exactamente 11 dígitos.',
+            'ruc.exists'         => 'No hay una empresa registrada con ese RUC. Contacta al administrador.',
             'dni.required'       => 'El DNI es obligatorio.',
             'dni.digits'         => 'El DNI debe tener exactamente 8 dígitos.',
             'dni.unique'         => 'Este DNI ya está registrado.',
@@ -79,7 +81,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'ruc'               => $data['ruc'],
+            'company_id'        => Company::where('ruc', $data['ruc'])->value('id'),  // lo decide el servidor
             'dni'               => $data['dni'],
             'names'             => $data['names'],
             'surnames'          => $data['surnames'],
@@ -95,9 +97,7 @@ class AuthController extends Controller
         return response()->json(['redirect' => $this->homeFor($user)], 201);
     }
 
-    /* ------------------------------------------------------------------
-       A dónde va cada rol al entrar. Ruta relativa (false) para no depender de APP_URL.
-       ------------------------------------------------------------------ */
+    // A dónde va cada rol al entrar. Ruta relativa (false) para no depender de APP_URL.
     private function homeFor(User $user): string
     {
         return route($user->isAdmin() ? 'admin.dashboard' : 'user.dashboard', [], false);

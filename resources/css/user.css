@@ -246,3 +246,16 @@
 }
 
 [data-theme="dark"] .doc-sent { color: var(--teal); }
+
+/* ==========================================================================
+   AÑADIR AL FINAL DE resources/css/user.css
+   Dirección / referencia: el botón doble "Texto | PDF" reutiliza .yes-no y .yn-btn (ya existen)
+   ========================================================================== */
+.yn-btn.is-active[data-choice="texto"],
+.yn-btn.is-active[data-choice="pdf"] {
+    background: var(--teal);
+    color: #fff;
+}
+
+.extra-row { margin-bottom: 18px; }
+.extra-row:last-child { margin-bottom: 0; }

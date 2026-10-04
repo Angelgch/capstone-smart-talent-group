@@ -1,13 +1,18 @@
-{{-- resources/views/admin/companies/matrix.blade.php  (REEMPLAZA al anterior)
-     MATRIZ = tabla RESUMEN de las solicitudes de la empresa. El detalle completo está en show.blade.php --}}
-@extends('layouts.admin')
-@section('title', 'Matriz de Solicitudes')
-@section('page-title', 'Matriz — ' . $company->name)
+{{-- resources/views/user/requests/matrix.blade.php   (antes index.blade.php)
+     MATRIZ del usuario = tabla RESUMEN de sus solicitudes. El detalle completo está en show.blade.php --}}
+@extends('layouts.user')
+@section('title', 'Mis Solicitudes')
+@section('page-title', 'Mis Solicitudes')
 
 @section('content')
 
-{{-- Buscador y filtro: funcionan por GET (?q=...&status=...), lo resuelve el controlador --}}
-<form method="GET" action="{{ route('admin.companies.matrix', $company) }}" class="filter-section">
+{{-- Aviso al crear una solicitud (viene de RequestController@store) --}}
+@if (session('status'))
+    <div class="alert alert-success">{{ session('status') }}</div>
+@endif
+
+{{-- Buscador y filtro: funcionan por GET (?q=...&status=...) --}}
+<form method="GET" action="{{ route('user.requests.index') }}" class="filter-section">
     <input type="text" name="q" value="{{ request('q') }}" class="form-control" style="max-width:320px"
            placeholder="Buscar por DNI, nombre o apellido...">
 
@@ -21,10 +26,13 @@
     <button type="submit" class="btn btn-gestionar"><i class="fas fa-search me-1"></i> Filtrar</button>
 
     @if (request()->filled('q') || request()->filled('status'))
-        <a href="{{ route('admin.companies.matrix', $company) }}" class="btn btn-outline-secondary">Limpiar</a>
+        <a href="{{ route('user.requests.index') }}" class="btn btn-outline-secondary">Limpiar</a>
     @endif
 
-    <a href="#" class="btn btn-excel ms-auto" onclick="devAlert(event)"><i class="fas fa-file-excel me-1"></i> Descargar Excel</a>
+    <div class="ms-auto d-flex gap-2">
+        <a href="#" class="btn btn-excel" onclick="devAlert(event)"><i class="fas fa-file-excel me-1"></i> Descargar Excel</a>
+        <a href="{{ route('user.requests.create') }}" class="btn-submit"><i class="fas fa-plus-circle"></i> Nueva solicitud</a>
+    </div>
 </form>
 
 <div class="table-custom-container">
@@ -33,7 +41,6 @@
             <tr>
                 <th>N° Solicitud</th>
                 <th>Fecha</th>
-                <th>Responsable</th>
                 <th>Candidato</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -44,25 +51,24 @@
             <tr>
                 <td class="fw-semibold">{{ $s->code }}</td>
                 <td>{{ $s->created_at->format('d/m/Y') }}</td>
-                <td>{{ $s->user->name }}</td>
                 <td>
                     <div class="fw-semibold">{{ $s->full_name }}</div>
                     <small class="text-muted">DNI: {{ $s->dni }}</small>
                 </td>
                 <td><x-request-status :status="$s->status" kind="general" /></td>
                 <td>
-                    {{-- Botón azul: ver detalle (ahí también se gestionará) --}}
-                    <a href="{{ route('admin.companies.requests.show', [$company, $s]) }}" class="btn-icon btn-icon-view" title="Ver detalle">
+                    {{-- Botón azul: ver detalle --}}
+                    <a href="{{ route('user.requests.show', $s) }}" class="btn-icon btn-icon-view" title="Ver detalle">
                         <i class="fas fa-eye"></i>
                     </a>
 
-                    {{-- Botón naranja: descargar los archivos que envió el usuario (.zip) --}}
-                    @if ($s->attachments_count > 0)
-                        <a href="{{ route('files.zip', [$s, 'requisito_cliente']) }}" class="btn-icon btn-icon-files" title="Descargar archivos del usuario (.zip)">
+                    {{-- Botón naranja: descargar los informes (.zip). Se activa cuando ya hay informes --}}
+                    @if ($s->results_count > 0)
+                        <a href="{{ route('files.zip', [$s, 'informe_admin']) }}" class="btn-icon btn-icon-files" title="Descargar informes (.zip)">
                             <i class="fas fa-download"></i>
                         </a>
                     @else
-                        <span class="btn-icon btn-icon-files is-disabled" title="El usuario no envió archivos">
+                        <span class="btn-icon btn-icon-files is-disabled" title="Aún no hay informes">
                             <i class="fas fa-download"></i>
                         </span>
                     @endif
@@ -70,7 +76,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">No hay solicitudes para mostrar.</td>
+                <td colspan="5" class="text-center text-muted py-4">Todavía no tienes solicitudes.</td>
             </tr>
             @endforelse
         </tbody>
