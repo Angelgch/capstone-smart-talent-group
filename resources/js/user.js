@@ -10,6 +10,8 @@ function initRequestForm() {
     const error = document.getElementById('formError');
     if (!form || !btn) return;
 
+    if (form.dataset.mode === 'create') return; // en "create" el formulario se envía de verdad (user-create.js lo valida)
+
     btn.addEventListener('click', () => {
         error.classList.add('d-none');
 

@@ -1,11 +1,11 @@
-// resources/js/user-create.js
-// Lógica extra del formulario de solicitud (create / edit):
+// resources/js/user-create.js   (REEMPLAZA al anterior)
+// Lógica del formulario de solicitud:
 //   1) Documento opcional por servicio (Sí / No)
-//   2) Teléfono: solo números y máximo 9 dígitos (sin regla de país)
-//   3) DNI: solo números, máximo 8
+//   2) Dirección y referencia: TEXTO o PDF (al elegir uno, el otro desaparece y se vacía)
+//   3) Teléfono: solo números y máximo 9 dígitos  |  DNI: solo números, máximo 8
+//   4) Freno antes de enviar: si algo está mal NO se envía y se marca el error
 //
-// No toca user.js: se "engancha" antes del botón de enviar y, si algo está mal,
-// frena el envío. Si todo está bien, deja pasar y user.js hace lo suyo (alert + redirección).
+// En "create" el formulario se envía DE VERDAD al servidor (POST normal). Aquí solo se valida antes.
 
 /* ==========================================================================
    CONFIG
@@ -17,15 +17,30 @@ const PHONE_MIN_DIGITS = 7; // mínimo aceptado (otros países pueden tener meno
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('requestForm');
-    if (!form) return; // en otras páginas (dashboard, etc.) no hace nada
+    if (!form) return; // en otras páginas no hace nada
 
     initServiceDocs(form);
+    initExtras(form);
     initPhone();
     initDni();
 
-    // Fase de captura (true): corre ANTES que el click de user.js en el botón.
+    // Al marcar un servicio se limpia el aviso "seleccione al menos uno"
+    form.addEventListener('change', (e) => {
+        if (e.target.classList.contains('service-cb')) showFormError('');
+    });
+
+    // Fase de captura (true): corre ANTES que cualquier otro click sobre el botón de enviar.
     form.addEventListener('click', guardSubmit, true);
 });
+
+/* ==========================================================================
+   Utilidad: revisa un archivo. Devuelve el mensaje de error o '' si está bien
+   ========================================================================== */
+function fileError(file) {
+    if (!ALLOWED_TYPES.includes(file.type)) return 'Formato no permitido. Usa PDF, JPG o PNG.';
+    if (file.size > MAX_FILE_MB * 1024 * 1024) return `El archivo supera los ${MAX_FILE_MB} MB.`;
+    return '';
+}
 
 /* ==========================================================================
    1. DOCUMENTO OPCIONAL POR SERVICIO
@@ -33,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function initServiceDocs(form) {
     form.querySelectorAll('.service-row').forEach((row) => {
         const checkbox = row.querySelector('.service-cb');
-        const hidden = row.querySelector('.doc-choice');   // valor "no" | "si" (para la BD)
+        const hidden = row.querySelector('.doc-choice');   // valor "no" | "si"
         const file = row.querySelector('.doc-file');
         const buttons = row.querySelectorAll('.yn-btn');
 
-        // Servicios bloqueados (ya en trámite) no tienen opción de documento: se saltan
+        // Servicios sin opción de documento (ej. la edición de demostración) se saltan
         if (!hidden || !file) return;
 
         // Cambia entre "no" y "si": pinta el botón, muestra/oculta el archivo
@@ -50,7 +65,7 @@ function initServiceDocs(form) {
             });
             row.classList.toggle('wants-doc', value === 'si');
 
-            // "No" => se descarta cualquier archivo (queda null/vacío)
+            // "No" => se descarta cualquier archivo
             if (value === 'no') {
                 file.value = '';
                 setFileError(row, '');
@@ -71,11 +86,12 @@ function initServiceDocs(form) {
 
 function setFileError(row, msg) {
     const box = row.querySelector('.doc-error');
+    if (!box) return;
     box.textContent = msg;
     box.classList.toggle('d-none', !msg);
 }
 
-// Revisa que haya archivo, formato permitido y tamaño máximo
+// Con "Sí", el archivo es obligatorio
 function validateFile(row) {
     const file = row.querySelector('.doc-file').files[0];
 
@@ -83,16 +99,9 @@ function validateFile(row) {
         setFileError(row, 'Adjunta el documento o elige "No".');
         return false;
     }
-    if (!ALLOWED_TYPES.includes(file.type)) {
-        setFileError(row, 'Formato no permitido. Usa PDF, JPG o PNG.');
-        return false;
-    }
-    if (file.size > MAX_FILE_MB * 1024 * 1024) {
-        setFileError(row, `El archivo supera los ${MAX_FILE_MB} MB.`);
-        return false;
-    }
-    setFileError(row, '');
-    return true;
+    const msg = fileError(file);
+    setFileError(row, msg);
+    return !msg;
 }
 
 // Valida todos los servicios marcados donde eligió "Sí"
@@ -100,7 +109,7 @@ function validateDocs() {
     let ok = true;
     document.querySelectorAll('.service-row').forEach((row) => {
         const hidden = row.querySelector('.doc-choice');
-        if (!hidden) return; // fila bloqueada: sin documento
+        if (!hidden) return;
         const marcado = row.querySelector('.service-cb').checked;
         if (marcado && hidden.value === 'si' && !validateFile(row)) ok = false;
     });
@@ -108,13 +117,74 @@ function validateDocs() {
 }
 
 /* ==========================================================================
-   2. TELÉFONO (solo números, máximo 9 dígitos)
+   2. DIRECCIÓN Y REFERENCIA: TEXTO O PDF
+   ========================================================================== */
+function initExtras(form) {
+    form.querySelectorAll('.extra-row').forEach((row) => {
+        const textBox = row.querySelector('.extra-text');
+        const fileBox = row.querySelector('.extra-file');
+        const textInput = textBox.querySelector('input');
+        const fileInput = fileBox.querySelector('input');
+        const buttons = row.querySelectorAll('.yn-btn');
+
+        const setMode = (mode) => {
+            buttons.forEach((b) => {
+                const active = b.dataset.choice === mode;
+                b.classList.toggle('is-active', active);
+                b.setAttribute('aria-pressed', active);
+            });
+            textBox.classList.toggle('d-none', mode !== 'texto');
+            fileBox.classList.toggle('d-none', mode !== 'pdf');
+
+            // Lo que se oculta se vacía: nunca viajan los dos al servidor
+            if (mode === 'texto') {
+                fileInput.value = '';
+                setExtraError(row, '');
+            } else {
+                textInput.value = '';
+            }
+        };
+
+        buttons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.choice)));
+        fileInput.addEventListener('change', () => validateExtra(row));
+    });
+}
+
+function setExtraError(row, msg) {
+    const box = row.querySelector('.extra-error');
+    if (!box) return;
+    box.textContent = msg;
+    box.classList.toggle('d-none', !msg);
+}
+
+// Aquí el archivo es opcional: solo se revisa si eligió uno
+function validateExtra(row) {
+    const file = row.querySelector('.extra-file input').files[0];
+    if (!file) {
+        setExtraError(row, '');
+        return true;
+    }
+    const msg = fileError(file);
+    setExtraError(row, msg);
+    return !msg;
+}
+
+function validateExtras() {
+    let ok = true;
+    document.querySelectorAll('.extra-row').forEach((row) => {
+        if (!validateExtra(row)) ok = false;
+    });
+    return ok;
+}
+
+/* ==========================================================================
+   3. TELÉFONO Y DNI
    ========================================================================== */
 function initPhone() {
     const input = document.getElementById('phone');
     if (!input) return;
 
-    // Limpia lo que venga precargado (ej. en edit: "999 999 999" => "999999999")
+    // Limpia lo que venga precargado (ej. "999 999 999" => "999999999")
     input.value = cleanPhone(input.value);
 
     input.addEventListener('input', () => {
@@ -143,7 +213,7 @@ function showPhoneError(msg) {
 
 function validatePhone() {
     const input = document.getElementById('phone');
-    if (!input) return true; // si la página no tiene teléfono, no bloquea
+    if (!input) return true;
 
     if (!input.value) {
         showPhoneError('Ingresa el teléfono del candidato.');
@@ -157,9 +227,6 @@ function validatePhone() {
     return true;
 }
 
-/* ==========================================================================
-   3. DNI (solo números, máximo 8)
-   ========================================================================== */
 function initDni() {
     const dni = document.getElementById('dni');
     if (!dni) return;
@@ -171,19 +238,37 @@ function initDni() {
 /* ==========================================================================
    4. FRENO ANTES DE ENVIAR
    ========================================================================== */
+function showFormError(msg) {
+    const box = document.getElementById('formError');
+    if (!box) return;
+    box.textContent = msg;
+    box.classList.toggle('d-none', !msg);
+}
+
+// Al menos un servicio marcado (solo en "create": la edición de demostración lo revisa user.js)
+function validateServices(form) {
+    const any = form.querySelector('.service-cb:checked');
+    showFormError(any ? '' : 'Seleccione al menos un servicio.');
+    return !!any;
+}
+
 function guardSubmit(e) {
     // Solo nos interesa el click en el botón de enviar
     if (!e.target.closest('#btnSubmitRequest')) return;
 
-    // Se ejecutan ambas para mostrar todos los errores a la vez
+    const form = e.currentTarget;
+
+    // Se ejecutan todas (sin cortar en la primera) para mostrar todos los errores a la vez
     const phoneOk = validatePhone();
     const docsOk = validateDocs();
+    const extrasOk = validateExtras();
+    const servicesOk = form.dataset.mode === 'create' ? validateServices(form) : true;
 
-    if (!phoneOk || !docsOk) {
-        e.preventDefault();
-        e.stopPropagation(); // user.js no llega a ejecutarse
-        document.querySelector('.field-error:not(.d-none)')
+    if (!phoneOk || !docsOk || !extrasOk || !servicesOk) {
+        e.preventDefault();   // el formulario no se envía
+        e.stopPropagation();  // y ningún otro script reacciona a este click
+        document.querySelector('.field-error:not(.d-none), .form-error:not(.d-none)')
             ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    // Si todo está bien, no hacemos nada: sigue el flujo normal de user.js
+    // Si todo está bien: no se hace nada y el navegador envía el formulario
 }

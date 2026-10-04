@@ -1,6 +1,6 @@
 <?php
 
-// app/Models/VerificationRequest.php  (CABECERA de la solicitud)
+// app/Models/VerificationRequest.php  (CABECERA de la solicitud; tabla "requests")
 namespace App\Models;
 
 use App\Support\ServiceCatalog;
@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VerificationRequest extends Model
 {
+    protected $table = 'requests';   // la tabla se llama "requests"
+
     protected $fillable = [
         'user_id', 'dni', 'names', 'surnames', 'email', 'phone', 'observations', 'status',
     ];
@@ -20,10 +22,16 @@ class VerificationRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Detalle: servicios + dirección/referencia
+    // Detalle: servicios + dirección/referencia (clave foránea: request_id)
     public function services(): HasMany
     {
-        return $this->hasMany(RequestService::class);
+        return $this->hasMany(RequestService::class, 'request_id');
+    }
+
+    // Todos los archivos de la solicitud
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class, 'request_id');
     }
 
     public function getFullNameAttribute(): string

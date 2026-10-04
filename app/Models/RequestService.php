@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RequestService extends Model
 {
-    protected $fillable = ['verification_request_id', 'service', 'status', 'text'];
+    protected $fillable = ['request_id', 'service', 'status', 'detail'];
 
     public function verificationRequest(): BelongsTo
     {
-        return $this->belongsTo(VerificationRequest::class);
+        return $this->belongsTo(VerificationRequest::class, 'request_id');
     }
 
     public function documents(): HasMany
@@ -25,12 +25,12 @@ class RequestService extends Model
     // Lo que subió el usuario (null si eligió "No enviar documento" o escribió texto)
     public function attachment(): HasOne
     {
-        return $this->hasOne(Document::class)->where('kind', 'adjunto');
+        return $this->hasOne(Document::class)->where('type', 'requisito_cliente');
     }
 
-    // PDF oficial que devuelve el admin (null mientras no lo suba)
+    // PDF final que sube el admin (null mientras no lo suba)
     public function result(): HasOne
     {
-        return $this->hasOne(Document::class)->where('kind', 'resultado');
+        return $this->hasOne(Document::class)->where('type', 'informe_admin');
     }
 }

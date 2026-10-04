@@ -1,9 +1,8 @@
 <?php
 
-// database/migrations/2026_10_02_000002_create_verification_requests_table.php  (REEMPLAZA la anterior)
-// CABECERA de la solicitud: un candidato que el usuario manda a verificar.
-// Lo que se ve en la tabla resumen (matriz): N°, fecha, responsable, candidato y estado general.
-// Los servicios y la dirección/referencia viven en request_services (detalle).
+// database/migrations/2026_10_02_000001_create_requests_table.php
+// TABLA 3 de 5: SOLICITUDES (la "cabecera"): un candidato que un usuario manda a verificar.
+// Modelo: VerificationRequest (se llama así para no chocar con Illuminate\Http\Request).
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,7 +12,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('verification_requests', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->id(); // = N° de solicitud (se muestra como SOL-00001)
 
             // Responsable: el usuario que la registró. No se puede borrar un usuario con solicitudes.
@@ -25,8 +24,6 @@ return new class extends Migration
             $table->string('surnames');
             $table->string('email');
             $table->string('phone', 15);
-
-            // Observaciones: solo texto
             $table->text('observations')->nullable();
 
             // Estado general: se recalcula a partir de sus servicios (VerificationRequest::refreshStatus)
@@ -40,6 +37,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('verification_requests');
+        Schema::dropIfExists('requests');
     }
 };

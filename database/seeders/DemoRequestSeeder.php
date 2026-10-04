@@ -19,12 +19,12 @@ class DemoRequestSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->data() as $companyName => $d) {
-            // Usuario de la empresa: su RUC es el de la empresa (así la matriz sabe de quién es cada solicitud)
+            // Usuario de la empresa (company_id = esa empresa, así la matriz sabe de quién es cada solicitud)
             $user = User::firstOrNew(['email' => $d['email']]);
             if (! $user->exists) {
                 $user->forceFill([
+                    'company_id' => Company::where('trade_name', $companyName)->value('id'),
                     'names' => 'Usuario', 'surnames' => $companyName, 'dni' => $d['dni'], 'phone' => '999999999',
-                    'ruc' => Company::where('name', $companyName)->value('ruc'),
                     'password' => '12345', 'role' => 'user', 'terms_accepted_at' => now(),
                 ])->save();
             }
@@ -49,30 +49,36 @@ class DemoRequestSeeder extends Seeder
         }
 
         // DETALLE: un ítem pedido = una fila (lo que no aparece = no solicitado).
-        // 'texts' = texto de direccion/referencia cuando eligió escribir en vez de subir PDF.
+        // 'texts' = texto de direccion/referencia (columna detail) cuando eligió escribir en vez de subir PDF.
         foreach ($r['services'] as $key => $status) {
             RequestService::updateOrCreate(
-                ['verification_request_id' => $req->id, 'service' => $key],
-                ['status' => $status, 'text' => $r['texts'][$key] ?? null]
+                ['request_id' => $req->id, 'service' => $key],
+                ['status' => $status, 'detail' => $r['texts'][$key] ?? null]
             );
         }
 
-        // Documentos: informe del admin (resultado) y archivo del usuario (adjunto)
-        $this->documents($req, $r['results'] ?? [], 'resultado', 'results/');
-        $this->documents($req, $r['attachments'] ?? [], 'adjunto', 'attachments/');
+        // Documentos: informe del admin (informe_admin) y archivo del usuario (requisito_cliente)
+        $adminId = User::where('role', 'admin')->value('id');
+        $this->documents($req, $r['results'] ?? [], 'informe_admin', 'results/', $adminId);
+        $this->documents($req, $r['attachments'] ?? [], 'requisito_cliente', 'attachments/', $req->user_id);
 
         $req->refreshStatus(); // estado general según sus servicios
     }
 
-    private function documents(VerificationRequest $req, array $files, string $kind, string $folder): void
+    private function documents(VerificationRequest $req, array $files, string $type, string $folder, int $uploaderId): void
     {
         foreach ($files as $key => $file) {
-            $item = RequestService::where('verification_request_id', $req->id)->where('service', $key)->first();
+            $item = RequestService::where('request_id', $req->id)->where('service', $key)->first();
             if (! $item) continue;
 
             Document::updateOrCreate(
-                ['request_service_id' => $item->id, 'kind' => $kind],
-                ['file_path' => $folder . $file, 'original_name' => $file]
+                ['request_service_id' => $item->id, 'type' => $type],
+                [
+                    'request_id'    => $req->id,
+                    'user_id'       => $uploaderId,   // quién lo subió (admin o el cliente)
+                    'file_path'     => $folder . $file,
+                    'original_name' => $file,
+                ]
             );
         }
     }

@@ -1,17 +1,28 @@
-{{-- resources/views/user/requests/_form.blade.php --}}
-{{-- Parcial compartido por create y edit. Reemplaza tu archivo completo por este. --}}
+{{-- resources/views/user/requests/formCreate.blade.php
+     Formulario de NUEVA SOLICITUD: guarda de verdad en la BD (User\RequestController@store).
+     Solo sirve para CREAR. El _form.blade.php anterior queda únicamente para la edición de demostración. --}}
 @php
-    $c         = $candidate ?? [];
-    $isEdit    = !empty($c);
-    $requested = array_keys($c['services'] ?? []);
-    $locked    = ['En Proceso'];  // ya en trámite: no se puede quitar
-    $completed = ['Realizado'];   // completado: se puede cancelar, pero con advertencia de penalización (user-edit.js)
+    $oldServices = old('services', []);
+    $lastGroup   = null;
 @endphp
 
-{{-- enctype: necesario para subir archivos cuando exista el backend. @csrf ya queda listo. --}}
-<form id="requestForm" enctype="multipart/form-data" data-mode="{{ $isEdit ? 'edit' : 'create' }}" data-return="{{ $return }}" data-message="{{ $message }}">
+<form id="requestForm" method="POST" action="{{ route('user.requests.store') }}"
+      enctype="multipart/form-data" data-mode="create">
     @csrf
 
+    {{-- Errores que devuelve el servidor (por si algo pasa el filtro del navegador) --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Revisa los datos:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- 1. CANDIDATO --}}
     <div class="section-card">
         <h5 class="section-title">
             <span class="icon-circle teal"><i class="fas fa-user-plus"></i></span>
@@ -20,35 +31,31 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold" for="dni">DNI (8 dígitos)</label>
-                {{-- NUEVO: id="dni" (user-create.js lo usa para dejar solo números) + inputmode numérico --}}
-                <input type="text" class="form-control" id="dni" name="dni" pattern="\d{8}" maxlength="8"
-                       inputmode="numeric" autocomplete="off"
-                       required value="{{ $c['dni'] ?? '' }}" @readonly($isEdit)>
+                <input type="text" class="form-control" id="dni" name="dni" maxlength="8" inputmode="numeric"
+                       pattern="\d{8}" autocomplete="off" required value="{{ old('dni') }}">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold" for="email">Correo electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" autocomplete="email" required value="{{ $c['email'] ?? '' }}">
+                <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold" for="names">Nombres</label>
-                <input type="text" class="form-control" id="names" name="names" autocomplete="given-name" required value="{{ $c['names'] ?? '' }}">
+                <input type="text" class="form-control" id="names" name="names" required value="{{ old('names') }}">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold" for="surnames">Apellidos</label>
-                <input type="text" class="form-control" id="surnames" name="surnames" autocomplete="family-name" required value="{{ $c['surnames'] ?? '' }}">
+                <input type="text" class="form-control" id="surnames" name="surnames" required value="{{ old('surnames') }}">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold" for="phone">Teléfono (máx. 9 dígitos)</label>
-                {{-- Solo números y máximo 9 dígitos (el límite real lo controla user-create.js) --}}
-                <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel" required
-                       maxlength="9" inputmode="numeric" placeholder="987654321"
-                       value="{{ $c['phone'] ?? '' }}">
-                {{-- NUEVO: mensaje de error que llena user-create.js --}}
+                <input type="tel" class="form-control" id="phone" name="phone" required maxlength="9"
+                       inputmode="numeric" placeholder="987654321" value="{{ old('phone') }}">
                 <small class="field-error d-none" id="phoneError" role="alert"></small>
             </div>
         </div>
     </div>
 
+    {{-- 2. SERVICIOS (cada uno con su documento opcional Sí/No) --}}
     <div class="section-card">
         <h5 class="section-title">
             <span class="icon-circle orange"><i class="fas fa-concierge-bell"></i></span>
@@ -60,104 +67,103 @@
             El documento es opcional. Elige <strong>Sí</strong> solo si quieres adjuntarlo ahora (PDF, JPG o PNG, máx. 5 MB).
         </p>
 
-        {{-- Se mantiene id="servicesCheckboxes": user.js lo usa para contar los servicios marcados --}}
+        {{-- id="servicesCheckboxes": lo usan los scripts para contar los servicios marcados --}}
         <div class="service-rows" id="servicesCheckboxes">
             @foreach ($services as $key => $s)
-                @php
-                    $st          = $c['services'][$key] ?? null;   // estado del servicio en este candidato
-                    $isLocked    = in_array($st, $locked);         // En Proceso: no se puede quitar
-                    $isCompleted = in_array($st, $completed);      // Realizado: cancelable con advertencia
-                    $existingDoc = $c['documents'][$key] ?? null;  // documento que el usuario ya envió (si existe)
-                @endphp
+                @php $group = $s['group'] ?? null; @endphp
 
-                {{-- Cada servicio = una fila de 2 columnas (ver CSS .service-row) --}}
-                <div class="service-row" data-service="{{ $key }}" data-status="{{ $st }}">
+                {{-- Título de grupo (ej. "Antecedentes Nacionales") cuando cambia --}}
+                @if ($group && $group !== $lastGroup)
+                    <div class="small fw-semibold text-muted mt-2">{{ $group }}</div>
+                @endif
+                @php $lastGroup = $group; @endphp
 
-                    {{-- Columna 1: check + nombre (tu .service-check de siempre) --}}
-                    <label class="service-check {{ $isLocked ? 'is-locked' : '' }}">
+                <div class="service-row" data-service="{{ $key }}">
+
+                    {{-- Columna 1: check + nombre --}}
+                    <label class="service-check">
                         <input type="checkbox" class="service-cb" name="services[]" value="{{ $key }}"
-                               @checked(in_array($key, $requested)) @disabled($isLocked)>
+                               @checked(in_array($key, $oldServices))>
                         <span class="check-icon"><i class="fas fa-check"></i></span>
                         <span>{{ $s['full'] }}</span>
-                        @if ($isCompleted)
-                            <span class="badge-completed">Completado</span>
-                        @endif
-                        @if ($isLocked)
-                            <i class="fas fa-lock ms-auto text-muted" title="Ya está en trámite"></i>
-                        @endif
                     </label>
 
-                    {{-- Un checkbox deshabilitado no se envía: este hidden mantiene el servicio en el envío --}}
-                    @if ($isLocked)
-                        <input type="hidden" name="services[]" value="{{ $key }}">
-                    @endif
-
-                    {{-- Columna 2: documento. En edit también aplica a servicios bloqueados/completados
-                         (por si al usuario le faltó subir un documento). Si un servicio no está marcado, no se ve. --}}
+                    {{-- Columna 2: documento (el CSS lo muestra solo si el servicio está marcado) --}}
                     <div class="service-extra">
-
-                        {{-- Documento que ya envió antes (solo edit, si existe) --}}
-                        @if ($existingDoc)
-                            <span class="doc-sent" title="{{ $existingDoc }}">
-                                <i class="fas fa-paperclip"></i><span>{{ $existingDoc }}</span>
-                            </span>
-                        @endif
-
-                        {{-- Aparece por CSS cuando el servicio está marcado --}}
                         <div class="doc-option">
-                            <span class="doc-question">{{ $existingDoc ? '¿Reemplazar documento?' : '¿Enviar documento?' }}</span>
+                            <span class="doc-question">¿Enviar documento?</span>
                             <div class="yes-no" role="group" aria-label="¿Enviar documento de {{ $s['full'] }}?">
                                 <button type="button" class="yn-btn is-active" data-choice="no" aria-pressed="true">No</button>
                                 <button type="button" class="yn-btn" data-choice="si" aria-pressed="false">Sí</button>
                             </div>
-                            {{-- Valor para la BD: "no" => sin documento nuevo (null) | "si" => sube archivo --}}
+                            {{-- "no" = sin documento (no se crea fila en documents) | "si" = sube archivo --}}
                             <input type="hidden" class="doc-choice" name="doc_choice[{{ $key }}]" value="no">
                         </div>
 
-                        {{-- Aparece solo si elige Sí --}}
                         <div class="doc-upload">
-                            <input type="file"
-                                   class="form-control form-control-sm doc-file"
-                                   id="doc_file_{{ $key }}"
-                                   name="documents[{{ $key }}]"
-                                   accept=".pdf,.jpg,.jpeg,.png"
-                                   aria-label="Documento para {{ $s['full'] }}">
+                            <input type="file" class="form-control form-control-sm doc-file"
+                                   id="doc_file_{{ $key }}" name="documents[{{ $key }}]"
+                                   accept=".pdf,.jpg,.jpeg,.png" aria-label="Documento para {{ $s['full'] }}">
                             <small class="field-error d-none doc-error" role="alert"></small>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
+
+        <div id="formError" class="form-error d-none" role="alert"></div>
     </div>
 
+    {{-- 3. DIRECCIÓN Y REFERENCIA: texto O pdf (al elegir uno, el otro desaparece) --}}
     <div class="section-card">
         <h5 class="section-title">
-            <span class="icon-circle pink"><i class="fas fa-comment-dots"></i></span>
-            Datos adicionales <small class="text-muted fw-normal" style="font-size:.8rem">(opcional)</small>
+            <span class="icon-circle pink"><i class="fas fa-location-dot"></i></span>
+            Dirección y referencia domiciliaria
+            <small class="text-muted fw-normal" style="font-size:.8rem">(opcional)</small>
         </h5>
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-semibold" for="direccion">Dirección domiciliaria</label>
-                <input type="text" class="form-control" id="direccion" name="direccion" autocomplete="off" value="{{ $c['direccion'] ?? '' }}">
+
+        @foreach ($extras as $key => $e)
+            <div class="extra-row" data-extra="{{ $key }}">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <label class="form-label fw-semibold mb-0" for="text_{{ $key }}">{{ $e['full'] }}</label>
+                    <div class="yes-no" role="group" aria-label="Formato de {{ $e['full'] }}">
+                        <button type="button" class="yn-btn is-active" data-choice="texto" aria-pressed="true">Texto</button>
+                        <button type="button" class="yn-btn" data-choice="pdf" aria-pressed="false">PDF</button>
+                    </div>
+                </div>
+
+                {{-- Modo texto (por defecto) --}}
+                <div class="extra-text">
+                    <input type="text" class="form-control" id="text_{{ $key }}" name="texts[{{ $key }}]"
+                           maxlength="500" value="{{ old('texts.' . $key) }}">
+                </div>
+
+                {{-- Modo PDF (oculto hasta que lo elija) --}}
+                <div class="extra-file d-none">
+                    <input type="file" class="form-control form-control-sm" id="file_{{ $key }}"
+                           name="documents[{{ $key }}]" accept=".pdf,.jpg,.jpeg,.png"
+                           aria-label="Archivo de {{ $e['full'] }}">
+                    <small class="field-error d-none extra-error" role="alert"></small>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold" for="referencia">Referencia domiciliaria</label>
-                <input type="text" class="form-control" id="referencia" name="referencia" autocomplete="off" value="{{ $c['referencia'] ?? '' }}">
-            </div>
-            <div class="col-12">
-                <label class="form-label fw-semibold" for="observaciones">Observaciones a tener en cuenta</label>
-                <textarea class="form-control" id="observaciones" name="observaciones" rows="3">{{ $c['observaciones'] ?? '' }}</textarea>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    <div id="formError" class="form-error d-none"></div>
+    {{-- 4. OBSERVACIONES: solo texto --}}
+    <div class="section-card">
+        <h5 class="section-title">
+            <span class="icon-circle teal"><i class="fas fa-comment-dots"></i></span>
+            Observaciones a tener en cuenta
+            <small class="text-muted fw-normal" style="font-size:.8rem">(opcional)</small>
+        </h5>
+        <textarea class="form-control" id="observations" name="observations" rows="3"
+                  maxlength="2000">{{ old('observations') }}</textarea>
+    </div>
 
     <div class="d-flex justify-content-end gap-2">
-        <a href="{{ $return }}" class="btn btn-outline-secondary">Cancelar</a>
-        <button type="button" id="btnSubmitRequest" class="btn-submit">
-            <i class="fas {{ $isEdit ? 'fa-floppy-disk' : 'fa-paper-plane' }}"></i>
-            {{ $isEdit ? 'Guardar cambios' : 'Enviar solicitud' }}
+        <a href="{{ route('user.requests.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" id="btnSubmitRequest" class="btn-submit">
+            <i class="fas fa-paper-plane"></i> Enviar solicitud
         </button>
     </div>
 </form>

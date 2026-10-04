@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\User\RequestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Support\DemoData;
-use App\Support\ServiceCatalog;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,12 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login');
 })->name('logout');
 
+// Descarga de archivos: un archivo o todos en .zip (admin: cualquiera | user: solo los suyos)
+Route::middleware('auth')->group(function () {
+    Route::get('/files/{document}', [DocumentController::class, 'download'])->name('files.download');
+    Route::get('/requests/{verificationRequest}/zip/{kind}', [DocumentController::class, 'zip'])->name('files.zip');
+});
+
 // Redirección por defecto si alguien entra manualmente a la URL base /admin
 Route::redirect('/admin', '/admin/dashboard');
 
@@ -68,21 +75,18 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
                 'canceladas' => $all->where('status', 'Cancelado')->count(),
             ],
             'requests' => $all->take(5), // máximo 5
-            'services' => ServiceCatalog::all(),
+            'services' => DemoData::services(),   // TEMPORAL (dashboard aún con DemoData)
         ]);
     })->name('dashboard');
 
-    Route::get('/requests', function () {
-        return view('user.requests.index', [
-            'candidates' => DemoData::userRequests(),
-            'services'   => ServiceCatalog::all(),
-        ]);
-    })->name('requests.index');
+    // Solicitudes (ver User\RequestController): matriz -> crear/guardar -> detalle
+    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
+    Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
+    Route::get('/requests/{verificationRequest}', [RequestController::class, 'show'])
+        ->whereNumber('verificationRequest')->name('requests.show');
 
-    Route::get('/requests/create', function () {
-        return view('user.requests.create', ['services' => ServiceCatalog::all()]);
-    })->name('requests.create');
-
+    // TEMPORAL (siguen con DemoData hasta que el detalle sea editable): editar y documentos de demostración
     Route::get('/requests/{dni}/edit', function ($dni) {
         $c = DemoData::candidate($dni);
 
@@ -93,13 +97,13 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
         $c['email']    = 'candidato@correo.com'; // demo
         $c['phone']    = '999 999 999';          // demo
 
-        return view('user.requests.edit', ['candidate' => $c, 'services' => ServiceCatalog::all()]);
+        return view('user.requests.edit', ['candidate' => $c, 'services' => DemoData::services()]);
     })->name('requests.edit');
 
     Route::get('/requests/{dni}/downloads', function ($dni) {
         return view('user.requests.downloads', [
             'candidate' => DemoData::candidate($dni),
-            'services'  => ServiceCatalog::all(),
+            'services'  => DemoData::services(),
         ]);
     })->name('requests.downloads');
 });
@@ -127,8 +131,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     ]);
 })->name('dashboard');
 
-    // Empresas (ver Admin\CompanyController): lista -> matriz (resumen) -> detalle de la solicitud
+    // Empresas (ver Admin\CompanyController): lista -> registrar -> matriz (resumen) -> detalle de la solicitud
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
+    Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
     Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
     Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');
 });
