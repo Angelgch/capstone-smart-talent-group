@@ -62,20 +62,7 @@ body {
 }
 
 /* ==========================================================================
-4. ESTILOS DE ACCESIBILIDAD
-========================================================================== */
-/* Aplicados a HTML para no afectar el Topbar fijo */
-html.high-contrast { filter: contrast(175%) !important; background-color: #000 !important; }
-html.filter-grayscale { filter: grayscale(100%) !important; }
-html.filter-deuteranopia { filter: hue-rotate(90deg) !important; }
-html.filter-protanopia { filter: hue-rotate(180deg) !important; }
-
-/* Aplicados al Body */
-body.font-dyslexic { font-family: 'OpenDyslexicRegular', sans-serif !important; }
-body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; line-height: 1.8 !important; }
-
-/* ==========================================================================
-5. BARRA SUPERIOR (TOPBAR)
+4. BARRA SUPERIOR (TOPBAR)
 ========================================================================== */
 .topbar {
     position: fixed;
@@ -187,7 +174,7 @@ body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !imp
 }
 
 /* ==========================================================================
-6. CONTENEDOR PRINCIPAL Y ESTRUCTURA DE LA APP
+5. CONTENEDOR PRINCIPAL Y ESTRUCTURA DE LA APP
 ========================================================================== */
 .app-container {
     margin-top: var(--topbar-h);
@@ -197,7 +184,7 @@ body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !imp
 }
 
 /* ==========================================================================
-7. MENÚ LATERAL (SIDEBAR) - ESTADO DESPLEGADO (DEFAULT)
+6. MENÚ LATERAL (SIDEBAR) - ESTADO DESPLEGADO (DEFAULT)
 ========================================================================== */
 .sidebar {
     position: fixed;
@@ -268,7 +255,7 @@ body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !imp
 }
 
 /* ==========================================================================
-8. ÁREA DE CONTENIDO PRINCIPAL (MAIN CONTENT)
+7. ÁREA DE CONTENIDO PRINCIPAL (MAIN CONTENT)
 ========================================================================== */
 .main-content {
     margin-top: var(--topbar-h); /* Empuja el contenido debajo del navbar */
@@ -281,7 +268,7 @@ body.wide-spacing { letter-spacing: 0.12em !important; word-spacing: 0.16em !imp
 }
 
 /* ==========================================================================
-9. ESTADO COLAPSADO (SIDEBAR-IS-COLLAPSED)
+8. ESTADO COLAPSADO (SIDEBAR-IS-COLLAPSED)
 ========================================================================== */
 html.sidebar-is-collapsed .sidebar,
 body.sidebar-is-collapsed .sidebar {
@@ -299,7 +286,7 @@ body.sidebar-is-collapsed .sidebar-text {
 }
 
 /* ==========================================================================
-10. COMPONENTES VISUALES: TARJETAS ESTADÍSTICAS (STAT CARDS)
+9. COMPONENTES VISUALES: TARJETAS ESTADÍSTICAS (STAT CARDS)
 ========================================================================== */
 .stat-card { 
     background: var(--bg-surface); 
@@ -343,7 +330,7 @@ body.sidebar-is-collapsed .sidebar-text {
 }
 
 /* ==========================================================================
-11. COMPONENTES VISUALES: TABLAS Y FILTROS
+10. COMPONENTES VISUALES: TABLAS Y FILTROS
 ========================================================================== */
 .filter-section { 
     background: var(--bg-surface); 
@@ -401,7 +388,7 @@ body.sidebar-is-collapsed .sidebar-text {
 }
 
 /* ==========================================================================
-12. SOBREESCRITURAS PARA FORMULARIOS EN MODO OSCURO
+11. SOBREESCRITURAS PARA FORMULARIOS EN MODO OSCURO
 ========================================================================== */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {

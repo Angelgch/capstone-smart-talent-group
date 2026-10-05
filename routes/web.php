@@ -146,3 +146,39 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
     Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');
 });
+
+
+// ========================================== BORRADOR EXAMPLE PROTOTYPE
+// RUTAS DE ADMINISTRADOR (Perfil y Config)
+// ==========================================
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::put('/profile', function () {
+        return back()->with('success', 'Perfil actualizado.');
+    })->name('profile.update');
+
+    Route::put('/password', function () {
+        return back()->with('success', 'Contraseña actualizada.');
+    })->name('password.update');
+
+    Route::put('/settings', function () {
+        return back()->with('success', 'Configuración guardada.');
+    })->name('settings.update');
+});
+
+
+// ==========================================
+// RUTAS DE CLIENTE / USER (Perfil y Config)
+// ==========================================
+Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
+    Route::put('/profile', function () {
+        return back()->with('success', 'Datos de empresa actualizados.');
+    })->name('profile.update');
+
+    Route::put('/password', function () {
+        return back()->with('success', 'Contraseña cambiada con éxito.');
+    })->name('password.update');
+
+    Route::put('/settings', function () {
+        return back()->with('success', 'Preferencias guardadas.');
+    })->name('settings.update');
+});
