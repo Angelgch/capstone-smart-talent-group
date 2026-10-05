@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('surnames');
             $table->string('email');
             $table->string('phone', 15);
+            $table->string('address', 500)->nullable();     // Dirección domiciliaria (solo texto RAMA PRUEBAS OJO ELIMINAR SI ESTA MAL)
+            $table->string('reference', 500)->nullable();   // Referencia domiciliaria (solo texto RAMA PRUEBAS OJO ELIMINAR SI ESTA MAL)
             $table->text('observations')->nullable();
 
             // Estado general: se recalcula a partir de sus servicios (VerificationRequest::refreshStatus)

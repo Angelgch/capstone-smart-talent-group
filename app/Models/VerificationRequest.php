@@ -7,14 +7,18 @@ use App\Support\ServiceCatalog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
+///recien añadido este en la rama prueba: use Illuminate\Database\Eloquent\Builder;
 
 class VerificationRequest extends Model
 {
     protected $table = 'requests';   // la tabla se llama "requests"
-
+    //recien añadido public const STATUSES = ['en_espera', 'en_progreso', 'realizado', 'cancelado'];
+    public const STATUSES = ['en_espera', 'en_progreso', 'realizado', 'cancelado'];
+    //fin
     protected $fillable = [
-        'user_id', 'dni', 'names', 'surnames', 'email', 'phone', 'observations', 'status',
-    ];
+        'user_id', 'dni', 'names', 'surnames', 'email', 'phone', 'observations', 'status', 'address', 'reference'
+    ]; //address y reference añadidos en la rama prueba
 
     // Responsable: quien registró la solicitud
     public function user(): BelongsTo
@@ -69,4 +73,18 @@ class VerificationRequest extends Model
 
         $this->update(['status' => $new]);
     }
+    //Function para filtrar por busqueda y estado de la solicitud
+    public function scopeSearch(Builder $query, ?string $q, ?string $status): Builder
+    {
+    return $query
+        ->when($q, function (Builder $query, string $q) {
+            $like = '%' . $q . '%';
+            $query->where(fn ($w) => $w
+                ->where('requests.dni', 'like', $like)
+                ->orWhere('requests.names', 'like', $like)
+                ->orWhere('requests.surnames', 'like', $like));
+        })
+        ->when(in_array($status, self::STATUSES, true), fn (Builder $query) => $query->where('requests.status', $status));
+    }
+    //fin de la funcion
 }

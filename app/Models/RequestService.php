@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RequestService extends Model
 {
-    protected $fillable = ['request_id', 'service', 'status', 'detail'];
+    protected $fillable = ['request_id', 'service', 'status'];  //'detail' quitado
 
     public function verificationRequest(): BelongsTo
     {

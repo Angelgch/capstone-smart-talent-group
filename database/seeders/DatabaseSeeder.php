@@ -40,6 +40,6 @@ class DatabaseSeeder extends Seeder
         ])->save();
 
         // 4) Solicitudes de ejemplo por empresa (va al final: necesita a los usuarios)
-        $this->call(DemoRequestSeeder::class);
+        //$this->call(DemoRequestSeeder::class); Recien comentado por la rama prueba
     }
 }

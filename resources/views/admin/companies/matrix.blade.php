@@ -24,7 +24,7 @@
         <a href="{{ route('admin.companies.matrix', $company) }}" class="btn btn-outline-secondary">Limpiar</a>
     @endif
 
-    <a href="#" class="btn btn-excel ms-auto" onclick="devAlert(event)"><i class="fas fa-file-excel me-1"></i> Descargar Excel</a>
+    <a href="{{ route('admin.companies.export', array_merge(['company' => $company], request()->query())) }}" class="btn btn-excel ms-auto">    <i class="fas fa-file-excel me-1"></i> Descargar Excel</a>
 </form>
 
 <div class="table-custom-container">
@@ -77,5 +77,8 @@
         </tbody>
     </table>
 </div>
+
+{{-- Paginación --}}
+<div class="mt-3">{{ $solicitudes->links() }}</div>
 
 @endsection

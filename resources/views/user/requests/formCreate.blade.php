@@ -114,40 +114,25 @@
         <div id="formError" class="form-error d-none" role="alert"></div>
     </div>
 
-    {{-- 3. DIRECCIÓN Y REFERENCIA: texto O pdf (al elegir uno, el otro desaparece) --}}
+    {{-- 3. DIRECCIÓN Y REFERENCIA: solo texto, opcionales --}}
     <div class="section-card">
         <h5 class="section-title">
             <span class="icon-circle pink"><i class="fas fa-location-dot"></i></span>
             Dirección y referencia domiciliaria
             <small class="text-muted fw-normal" style="font-size:.8rem">(opcional)</small>
         </h5>
-
-        @foreach ($extras as $key => $e)
-            <div class="extra-row" data-extra="{{ $key }}">
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <label class="form-label fw-semibold mb-0" for="text_{{ $key }}">{{ $e['full'] }}</label>
-                    <div class="yes-no" role="group" aria-label="Formato de {{ $e['full'] }}">
-                        <button type="button" class="yn-btn is-active" data-choice="texto" aria-pressed="true">Texto</button>
-                        <button type="button" class="yn-btn" data-choice="pdf" aria-pressed="false">PDF</button>
-                    </div>
-                </div>
-
-                {{-- Modo texto (por defecto) --}}
-                <div class="extra-text">
-                    <input type="text" class="form-control" id="text_{{ $key }}" name="texts[{{ $key }}]"
-                           maxlength="500" value="{{ old('texts.' . $key) }}">
-                </div>
-
-                {{-- Modo PDF (oculto hasta que lo elija) --}}
-                <div class="extra-file d-none">
-                    <input type="file" class="form-control form-control-sm" id="file_{{ $key }}"
-                           name="documents[{{ $key }}]" accept=".pdf,.jpg,.jpeg,.png"
-                           aria-label="Archivo de {{ $e['full'] }}">
-                    <small class="field-error d-none extra-error" role="alert"></small>
-                </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold" for="address">Dirección domiciliaria</label>
+                <input type="text" class="form-control" id="address" name="address" maxlength="500" value="{{ old('address') }}">
             </div>
-        @endforeach
+            <div class="col-md-6">
+                <label class="form-label fw-semibold" for="reference">Referencia domiciliaria</label>
+                <input type="text" class="form-control" id="reference" name="reference" maxlength="500" value="{{ old('reference') }}">
+            </div>
+        </div>
     </div>
+
 
     {{-- 4. OBSERVACIONES: solo texto --}}
     <div class="section-card">

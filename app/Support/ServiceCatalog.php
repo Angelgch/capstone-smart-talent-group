@@ -23,17 +23,17 @@ class ServiceCatalog
             'record'        => ['full' => 'Récord Laboral',               'short' => 'Récord Laboral'],
             'academicas'    => ['full' => 'Verificaciones Académicas',    'short' => 'Verif. Académicas'],
             'domiciliarias' => ['full' => 'Verificaciones Domiciliarias', 'short' => 'Verif. Domiciliarias'],
-            'reniec'        => ['full' => 'Ficha RENIEC',                 'short' => 'Ficha RENIEC'],
+            //IGUAL RAMA PRUEBAS// 'reniec'        => ['full' => 'Ficha RENIEC',                 'short' => 'Ficha RENIEC'],
         ];
     }
 
-    public static function extras(): array
+    /*lo mismo prueba/public static function extras(): array
     {
         return [
             'direccion'  => ['full' => 'Dirección domiciliaria',  'short' => 'Dirección'],
             'referencia' => ['full' => 'Referencia domiciliaria', 'short' => 'Referencia'],
         ];
-    }
+    }*/
 
     // Claves de los servicios (para validar y para calcular el estado general)
     public static function keys(): array
@@ -41,9 +41,9 @@ class ServiceCatalog
         return array_keys(self::all());
     }
 
-    // Claves de TODO lo que puede guardarse en request_services
+    /*lo mismo prueba rama Claves de TODO lo que puede guardarse en request_services
     public static function allKeys(): array
     {
         return array_merge(self::keys(), array_keys(self::extras()));
-    }
+    }*/
 }

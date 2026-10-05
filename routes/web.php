@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Support\DemoData;
+use App\Http\Controllers\Admin\RequestController as AdminRequestController;
+//recien añadido el use use App\Http\Controllers\Admin\RequestController as AdminRequestController;; para la funcion de busqueda y filtro de solicitudes
 
 /*
 |--------------------------------------------------------------------------
@@ -83,12 +85,21 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
     Route::view('/profile', 'user.profile')->name('profile');
     Route::view('/configuration', 'user.configuration')->name('configuration');
 
-    // Solicitudes (ver User\RequestController): matriz -> crear/guardar -> detalle
+    /*ANTIGUAS CAMBIADAS POR LA RAMA PRUEBA /Solicitudes (ver User\RequestController): matriz -> crear/guardar -> detalle
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
     Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
     Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
     Route::get('/requests/{verificationRequest}', [RequestController::class, 'show'])
-        ->whereNumber('verificationRequest')->name('requests.show');
+        ->whereNumber('verificationRequest')->name('requests.show');*/
+
+    // Solicitudes del usuario (User\RequestController)
+    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/export', [RequestController::class, 'export'])->name('requests.export');
+    Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
+    Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
+    Route::get('/requests/{solicitud}', [RequestController::class, 'show'])->whereNumber('solicitud')->name('requests.show');
+    Route::put('/requests/{solicitud}', [RequestController::class, 'update'])->whereNumber('solicitud')->name('requests.update');
+    Route::delete('/requests/{solicitud}', [RequestController::class, 'destroy'])->whereNumber('solicitud')->name('requests.destroy');
 
     // TEMPORAL (siguen con DemoData hasta que el detalle sea editable): editar y documentos de demostración
     Route::get('/requests/{dni}/edit', function ($dni) {
@@ -143,8 +154,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
     Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
-    Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
-    Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');
+    //AÑADIDAS EN LA RAMA PRUEBA PARA LA FUNCION DE BUSQUEDA Y FILTRO DE SOLICITUDES
+    Route::get('/companies/{company}/matrix', [AdminRequestController::class, 'matrix'])->name('companies.matrix');
+    Route::get('/companies/{company}/matrix/export', [AdminRequestController::class, 'export'])->name('companies.export');
+    Route::get('/companies/{company}/requests/{solicitud}', [AdminRequestController::class, 'show'])->whereNumber('solicitud')->name('companies.requests.show');
+    Route::put('/companies/{company}/requests/{solicitud}', [AdminRequestController::class, 'update'])->whereNumber('solicitud')->name('companies.requests.update');
+    
+    /*Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
+    Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');*/
 });
 
 

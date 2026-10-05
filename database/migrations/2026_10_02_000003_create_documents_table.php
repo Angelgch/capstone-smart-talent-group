@@ -17,7 +17,8 @@ return new class extends Migration
 
             $table->foreignId('request_id')->constrained('requests')->cascadeOnDelete();   // a qué solicitud pertenece
             // A qué servicio pertenece (null = documento general de la solicitud)
-            $table->foreignId('request_service_id')->nullable()->constrained('request_services')->cascadeOnDelete();
+            //ESTO ESTABA ANTES ASI QUE SI SE MALOGRA REBOBINA$table->foreignId('request_service_id')->nullable()->constrained('request_services')->cascadeOnDelete();
+            $table->foreignId('request_service_id')->constrained('request_services')->cascadeOnDelete();
             // Quién lo subió físicamente (el cliente o el admin)
             $table->foreignId('user_id')->constrained()->restrictOnDelete();
 

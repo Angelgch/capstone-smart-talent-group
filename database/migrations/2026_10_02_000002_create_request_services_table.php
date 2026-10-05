@@ -26,7 +26,7 @@ return new class extends Migration
 
             // Texto específico del ítem (ej. la dirección escrita). Si el usuario eligió PDF queda null
             // y el archivo va en documents.
-            $table->text('detail')->nullable();
+            //Esto estaba en la rama main si esta mal rebobina //$table->text('detail')->nullable();
 
             $table->timestamps();
 
