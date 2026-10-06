@@ -1,58 +1,77 @@
-{{-- Módulo en desarrollo: pantalla provisional para que el enlace del menú ya exista. --}}
+{{-- Mi Perfil: información de la cuenta. Guarda en user.profile.update (PUT). --}}
 @extends('layouts.user')
-@section('title', 'Perfil de Empresa - SmarTalent')
-@section('page-title', 'Perfil de la Empresa')
+@section('title', 'Mi Perfil')
+@section('page-title', 'Mi Perfil')
 
 @section('content')
+@php $user = auth()->user(); @endphp
 
-{{-- 
-    NOTA BACKEND: 
-    - Se conecta a la ruta: route('user.profile.update') (Método PUT/PATCH).
-    - Gestiona específicamente la información corporativa, fiscal y de representación legal del cliente.
---}}
+@if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+    </div>
+@endif
+
 <form action="{{ route('user.profile.update') }}" method="POST">
     @csrf
     @method('PUT')
 
-    <div class="section-card">
-        <h5 class="section-title">
-            <span class="icon-circle teal"><i class="fas fa-building"></i></span>
-            Datos Corporativos y Fiscales
-        </h5>
-
-        <div class="row g-3">
-            <div class="col-md-8">
-                <label class="form-label fw-semibold small">Razón Social</label>
-                <input type="text" class="form-control" name="company_name" value="{{ auth()->user()->company_name ?? 'Corporación Ejemplo S.A.C.' }}" required>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label fw-semibold small">RUC</label>
-                <input type="text" class="form-control" name="ruc" value="{{ auth()->user()->ruc ?? '20601234567' }}" maxlength="11" required>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label fw-semibold small">Representante Legal / Contacto Principal</label>
-                <input type="text" class="form-control" name="representative" value="{{ auth()->user()->name ?? '' }}" required>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label fw-semibold small">Correo Corporativo de Notificaciones</label>
-                <input type="email" class="form-control" name="email" value="{{ auth()->user()->email ?? '' }}" required>
-            </div>
-
-            <div class="col-12">
-                <label class="form-label fw-semibold small">Dirección Fiscal de la Empresa</label>
-                <input type="text" class="form-control" name="address" value="{{ auth()->user()->address ?? 'Av. Javier Prado Este 1238, San Isidro, Lima' }}">
+    <div class="row">
+        {{-- Izquierda: avatar por iniciales y rol --}}
+        <div class="col-lg-4 mb-4">
+            <div class="section-card text-center p-4">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=30C1AC&color=fff&size=120"
+                     alt="Avatar" class="rounded-circle shadow-sm mb-3" width="100">
+                <h5 class="fw-bold mb-1">{{ $user->name }}</h5>
+                <span class="badge bg-primary text-uppercase px-3 py-1">Cliente</span>
+                <p class="text-muted small mt-2 mb-0">{{ $user->company->name ?? "" }}</p>
             </div>
         </div>
 
-        <div class="mt-4 text-end">
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-check me-1"></i> Actualizar Datos de Empresa
-            </button>
+        {{-- Derecha: datos de la cuenta --}}
+        <div class="col-lg-8">
+            <div class="section-card">
+                <h5 class="section-title">
+                    <span class="icon-circle teal"><i class="fas fa-user-edit"></i></span>
+                    Información de la cuenta
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" for="names">Nombres</label>
+                        <input type="text" class="form-control" id="names" name="names" required value="{{ old('names', $user->names) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" for="surnames">Apellidos</label>
+                        <input type="text" class="form-control" id="surnames" name="surnames" required value="{{ old('surnames', $user->surnames) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" for="email">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email', $user->email) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" for="phone">Teléfono (9 dígitos)</label>
+                        <input type="text" class="form-control" id="phone" name="phone" maxlength="9" inputmode="numeric" value="{{ old('phone', $user->phone) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">DNI</label>
+                        <input type="text" class="form-control" value="{{ $user->dni }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">Empresa (RUC)</label>
+                        <input type="text" class="form-control" value="{{ $user->company->name ?? '' }} · {{ $user->company->ruc ?? '' }}" disabled>
+                    </div>
+                </div>
+                <small class="text-muted d-block mt-2">El DNI y la empresa no se pueden cambiar desde aquí.</small>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn-submit"><i class="fas fa-save me-1"></i> Guardar cambios</button>
+                </div>
+            </div>
         </div>
     </div>
 </form>
-
 @endsection

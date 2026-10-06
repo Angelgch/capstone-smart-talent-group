@@ -1,90 +1,77 @@
-{{-- Módulo en desarrollo: pantalla provisional para que el enlace del menú ya exista. --}}
+{{-- Configuración (estilo Twitter). Por ahora solo "Tu cuenta"; el resto es un adelanto visual. --}}
 @extends('layouts.admin')
-@section('title', 'Configuración - Administrador')
-@section('page-title', 'Ajustes del Sistema y Cuenta')
+@section('title', 'Configuración')
+@section('page-title', 'Configuración')
 
 @section('content')
 
-{{-- 
-    NOTA BACKEND: 
-    Esta vista agrupa configuraciones globales del panel de gestión:
-    - Izquierda: Cambio de credenciales (Apunta a route('admin.password.update')).
-    - Derecha: Interruptores de comportamiento del sistema (Apunta a route('admin.settings.update')).
---}}
-<div class="row">
-    <!-- Bloque 1: Seguridad y Contraseña -->
-    <div class="col-lg-6 mb-4">
-        <div class="section-card h-100">
-            <h5 class="section-title">
-                <span class="icon-circle orange"><i class="fas fa-lock"></i></span>
-                Seguridad y Contraseña
-            </h5>
-            
-            <form action="{{ route('admin.password.update') }}" method="POST">
-                @csrf
-                @method('PUT')
+@if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+    </div>
+@endif
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Contraseña Actual</label>
-                    <input type="password" class="form-control" name="current_password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Confirmar Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password_confirmation" required>
-                </div>
-
-                <button type="submit" class="btn btn-outline-dark btn-sm fw-semibold">
-                    Actualizar Contraseña
-                </button>
-            </form>
+<div class="row g-4">
+    {{-- Menú de la configuración --}}
+    <div class="col-lg-3">
+        <div class="list-group">
+            <span class="list-group-item active"><i class="fas fa-user me-2"></i>Tu cuenta</span>
+            <span class="list-group-item disabled"><i class="fas fa-shield-halved me-2"></i>Privacidad y seguridad <small class="d-block">Próximamente</small></span>
+            <span class="list-group-item disabled"><i class="fas fa-bell me-2"></i>Notificaciones <small class="d-block">Próximamente</small></span>
+            <span class="list-group-item disabled"><i class="fas fa-circle-question me-2"></i>Centro de ayuda <small class="d-block">Próximamente</small></span>
         </div>
     </div>
 
-    <!-- Bloque 2: Preferencias y Alertas Globales -->
-    <div class="col-lg-6 mb-4">
-        <div class="section-card h-100">
-            <h5 class="section-title">
-                <span class="icon-circle pink"><i class="fas fa-bell"></i></span>
-                Notificaciones y Alertas del Sistema
-            </h5>
+    {{-- Tu cuenta --}}
+    <div class="col-lg-9">
 
-            <form action="{{ route('admin.settings.update') }}" method="POST">
+        {{-- 1. Información de la cuenta --}}
+        <div class="section-card mb-3">
+            <h5 class="section-title">
+                <span class="icon-circle teal"><i class="fas fa-id-card"></i></span>
+                Información de la cuenta
+            </h5>
+            <p class="text-muted small">Nombres, apellidos, correo y teléfono.</p>
+            <a href="{{ route('admin.profile') }}" class="btn btn-outline-secondary btn-sm">Editar información</a>
+        </div>
+
+        {{-- 2. Cambiar contraseña --}}
+        <div class="section-card mb-3">
+            <h5 class="section-title">
+                <span class="icon-circle orange"><i class="fas fa-key"></i></span>
+                Cambiar contraseña
+            </h5>
+            <form action="{{ route('admin.password.update') }}" method="POST" class="row g-3">
                 @csrf
                 @method('PUT')
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="emailAlerts" name="email_alerts" checked>
-                    <label class="form-check-label fw-semibold small pt-1" for="emailAlerts">
-                        Recibir correos cuando un cliente cree una nueva solicitud
-                    </label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="current_password">Contraseña actual</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password" required>
                 </div>
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="dailyReport" name="daily_report">
-                    <label class="form-check-label fw-semibold small pt-1" for="dailyReport">
-                        Enviar resumen diario de la matriz de candidatos a mi correo
-                    </label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="password">Nueva contraseña (mín. 8)</label>
+                    <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
                 </div>
-
-                <div class="form-check form-switch mb-4">
-                    <input class="form-check-input" type="checkbox" id="maintenanceMode" name="maintenance_mode">
-                    <label class="form-check-label fw-semibold small pt-1 text-danger" for="maintenanceMode">
-                        Activar modo de mantenimiento general (Bloquea portales de usuario)
-                    </label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="password_confirmation">Confirmar nueva</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" autocomplete="new-password" required>
                 </div>
-
-                <button type="submit" class="btn-submit">
-                    Guardar Preferencias
-                </button>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn-submit"><i class="fas fa-save me-1"></i> Actualizar contraseña</button>
+                </div>
             </form>
+        </div>
+
+        <div class="section-card">
+            <h5 class="section-title">
+                <span class="icon-circle pink"><i class="fas fa-user-slash"></i></span>
+                Eliminar cuenta
+            </h5>
+            <p class="text-muted small mb-0">La cuenta del administrador general no se puede eliminar.</p>
         </div>
     </div>
 </div>
-
 @endsection

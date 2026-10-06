@@ -29,8 +29,8 @@
         </div>
         <div class="col-md-6">
             <label class="form-label fw-semibold" for="phone">Teléfono (opcional)</label>
-            <input type="tel" class="form-control" id="phone" name="phone" maxlength="15" inputmode="numeric"
-                   autocomplete="off" value="{{ old('phone') }}">
+            <input type="tel" class="form-control" id="phone" name="phone" maxlength="9" inputmode="numeric"
+               autocomplete="off" value="{{ old('phone') }}">
         </div>
         <div class="col-12">
             <label class="form-label fw-semibold" for="legal_name">Razón social</label>

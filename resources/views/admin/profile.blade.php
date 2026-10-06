@@ -1,77 +1,68 @@
-{{-- Módulo en desarrollo: pantalla provisional para que el enlace del menú ya exista. --}}
+{{-- Mi Perfil: información de la cuenta. Guarda en admin.profile.update (PUT). --}}
 @extends('layouts.admin')
-@section('title', 'Mi Perfil - Administrador')
-@section('page-title', 'Perfil de Administrador')
+@section('title', 'Mi Perfil')
+@section('page-title', 'Mi Perfil')
 
 @section('content')
+@php $user = auth()->user(); @endphp
 
-{{-- 
-    NOTA BACKEND: 
-    - Este formulario apunta a la ruta: route('admin.profile.update') (Método PUT/PATCH).
-    - Usa 'auth()->user()' para inyectar los datos actuales del administrador autenticado.
-    - Se requiere 'enctype="multipart/form-data"' para procesar la subida del archivo de avatar.
---}}
-<form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
+@if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+    </div>
+@endif
+
+<form action="{{ route('admin.profile.update') }}" method="POST">
     @csrf
     @method('PUT')
 
     <div class="row">
-        <!-- Columna Izquierda: Avatar y Rol del Admin -->
+        {{-- Izquierda: avatar por iniciales y rol --}}
         <div class="col-lg-4 mb-4">
             <div class="section-card text-center p-4">
-                <div class="mb-3">
-                    {{-- Generación dinámica de avatar por iniciales o imagen actual --}}
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin Master') }}&background=30C1AC&color=fff&size=120" 
-                         alt="Avatar" class="rounded-circle shadow-sm mb-3" width="100">
-                    <h5 class="fw-bold mb-1">{{ auth()->user()->name ?? 'Administrador General' }}</h5>
-                    <span class="badge bg-primary text-uppercase px-3 py-1">Super Admin</span>
-                </div>
-                <div class="mb-3 text-start">
-                    <label for="avatar" class="form-label fw-semibold small">Cambiar foto de perfil</label>
-                    <input type="file" class="form-control form-control-sm" id="avatar" name="avatar">
-                </div>
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=30C1AC&color=fff&size=120"
+                     alt="Avatar" class="rounded-circle shadow-sm mb-3" width="100">
+                <h5 class="fw-bold mb-1">{{ $user->name }}</h5>
+                <span class="badge bg-primary text-uppercase px-3 py-1">Administrador</span>
+
             </div>
         </div>
 
-        <!-- Columna Derecha: Datos de Identidad -->
+        {{-- Derecha: datos de la cuenta --}}
         <div class="col-lg-8">
             <div class="section-card">
                 <h5 class="section-title">
                     <span class="icon-circle teal"><i class="fas fa-user-edit"></i></span>
-                    Información Personal y de Contacto
+                    Información de la cuenta
                 </h5>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Nombre completo</label>
-                        <input type="text" class="form-control" name="name" value="{{ auth()->user()->name ?? '' }}" required>
+                        <label class="form-label fw-semibold small" for="names">Nombres</label>
+                        <input type="text" class="form-control" id="names" name="names" required value="{{ old('names', $user->names) }}">
                     </div>
-
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Correo Electrónico</label>
-                        <input type="email" class="form-control" name="email" value="{{ auth()->user()->email ?? '' }}" required>
+                        <label class="form-label fw-semibold small" for="surnames">Apellidos</label>
+                        <input type="text" class="form-control" id="surnames" name="surnames" required value="{{ old('surnames', $user->surnames) }}">
                     </div>
-
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Teléfono / Celular</label>
-                        <input type="text" class="form-control" name="phone" value="{{ auth()->user()->phone ?? '' }}">
+                        <label class="form-label fw-semibold small" for="email">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email', $user->email) }}">
                     </div>
-
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Departamento / Área</label>
-                        <input type="text" class="form-control" value="Tecnología y Operaciones" disabled>
-                        <small class="text-muted">Campo institucional de sistema.</small>
+                        <label class="form-label fw-semibold small" for="phone">Teléfono (9 dígitos)</label>
+                        <input type="text" class="form-control" id="phone" name="phone" maxlength="9" inputmode="numeric" value="{{ old('phone', $user->phone) }}">
                     </div>
                 </div>
 
                 <div class="mt-4 text-end">
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-save me-1"></i> Guardar Cambios
-                    </button>
+                    <button type="submit" class="btn-submit"><i class="fas fa-save me-1"></i> Guardar cambios</button>
                 </div>
             </div>
         </div>
     </div>
 </form>
-
 @endsection

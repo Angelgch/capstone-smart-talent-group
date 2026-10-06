@@ -1,84 +1,92 @@
-{{-- Módulo en desarrollo: pantalla provisional para que el enlace del menú ya exista. --}}
+{{-- Configuración (estilo Twitter). Por ahora solo "Tu cuenta"; el resto es un adelanto visual. --}}
 @extends('layouts.user')
-@section('title', 'Configuración - Portal Cliente')
-@section('page-title', 'Configuración de Cuenta')
+@section('title', 'Configuración')
+@section('page-title', 'Configuración')
 
 @section('content')
 
-{{-- 
-    NOTA BACKEND: 
-    - Izquierda: Permite al cliente modificar su contraseña de acceso (route('user.password.update')).
-    - Derecha: Configura las preferencias de avisos automáticos de sus solicitudes (route('user.settings.update')).
---}}
-<div class="row">
-    <!-- Cambio de Contraseña -->
-    <div class="col-lg-6 mb-4">
-        <div class="section-card h-100">
-            <h5 class="section-title">
-                <span class="icon-circle orange"><i class="fas fa-key"></i></span>
-                Cambiar Contraseña de Acceso
-            </h5>
+@if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+    </div>
+@endif
 
-            <form action="{{ route('user.password.update') }}" method="POST">
-                @csrf
-                @method('PUT')
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Contraseña Actual</label>
-                    <input type="password" class="form-control" name="current_password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold small">Confirmar Nueva Contraseña</label>
-                    <input type="password" class="form-control" name="password_confirmation" required>
-                </div>
-
-                <button type="submit" class="btn btn-outline-dark btn-sm fw-semibold">
-                    Modificar Clave
-                </button>
-            </form>
+<div class="row g-4">
+    {{-- Menú de la configuración --}}
+    <div class="col-lg-3">
+        <div class="list-group">
+            <span class="list-group-item active"><i class="fas fa-user me-2"></i>Tu cuenta</span>
+            <span class="list-group-item disabled"><i class="fas fa-shield-halved me-2"></i>Privacidad y seguridad <small class="d-block">Próximamente</small></span>
+            <span class="list-group-item disabled"><i class="fas fa-bell me-2"></i>Notificaciones <small class="d-block">Próximamente</small></span>
+            <span class="list-group-item disabled"><i class="fas fa-circle-question me-2"></i>Centro de ayuda <small class="d-block">Próximamente</small></span>
         </div>
     </div>
 
-    <!-- Preferencias de Alertas y Avisos -->
-    <div class="col-lg-6 mb-4">
-        <div class="section-card h-100">
-            <h5 class="section-title">
-                <span class="icon-circle pink"><i class="fas fa-envelope-open-text"></i></span>
-                Preferencias de Notificación de Solicitudes
-            </h5>
+    {{-- Tu cuenta --}}
+    <div class="col-lg-9">
 
-            <form action="{{ route('user.settings.update') }}" method="POST">
+        {{-- 1. Información de la cuenta --}}
+        <div class="section-card mb-3">
+            <h5 class="section-title">
+                <span class="icon-circle teal"><i class="fas fa-id-card"></i></span>
+                Información de la cuenta
+            </h5>
+            <p class="text-muted small">Nombres, apellidos, correo y teléfono.</p>
+            <a href="{{ route('user.profile') }}" class="btn btn-outline-secondary btn-sm">Editar información</a>
+        </div>
+
+        {{-- 2. Cambiar contraseña --}}
+        <div class="section-card mb-3">
+            <h5 class="section-title">
+                <span class="icon-circle orange"><i class="fas fa-key"></i></span>
+                Cambiar contraseña
+            </h5>
+            <form action="{{ route('user.password.update') }}" method="POST" class="row g-3">
                 @csrf
                 @method('PUT')
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="notifyStatus" name="notify_status" checked>
-                    <label class="form-check-label fw-semibold small pt-1" for="notifyStatus">
-                        Avisarme por correo cuando una solicitud pase a estado "Completado"
-                    </label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="current_password">Contraseña actual</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password" required>
                 </div>
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="notifyDoc" name="notify_doc" checked>
-                    <label class="form-check-label fw-semibold small pt-1" for="notifyDoc">
-                        Avisarme si un documento adjunto es rechazado o requiere corrección
-                    </label>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="password">Nueva contraseña (mín. 8)</label>
+                    <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" for="password_confirmation">Confirmar nueva</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" autocomplete="new-password" required>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn-submit"><i class="fas fa-save me-1"></i> Actualizar contraseña</button>
+                </div>
+            </form>
+        </div>
 
-                <div class="mt-4 pt-3">
-                    <button type="submit" class="btn-submit">
-                        Guardar Preferencias
-                    </button>
+        {{-- 3. Eliminar cuenta (pide la contraseña) --}}
+        <div class="section-card border border-danger-subtle">
+            <h5 class="section-title">
+                <span class="icon-circle pink"><i class="fas fa-user-slash"></i></span>
+                Eliminar cuenta
+            </h5>
+            <p class="text-muted small">
+                Se borrará tu cuenta junto con <strong>todas tus solicitudes y sus documentos</strong>. Esta acción no se puede deshacer.
+            </p>
+            <form action="{{ route('user.account.destroy') }}" method="POST" class="row g-3 align-items-end"
+                  onsubmit="return confirm('¿Seguro que quieres eliminar tu cuenta definitivamente?')">
+                @csrf
+                @method('DELETE')
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small" for="delete_password">Ingresa tu contraseña para confirmar</label>
+                    <input type="password" class="form-control" id="delete_password" name="password" autocomplete="current-password" required>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> Eliminar mi cuenta</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 @endsection

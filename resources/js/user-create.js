@@ -1,11 +1,11 @@
 // resources/js/user-create.js   (REEMPLAZA al anterior)
 // Lógica del formulario de solicitud:
 //   1) Documento opcional por servicio (Sí / No)
-//   2) Dirección y referencia: TEXTO o PDF (al elegir uno, el otro desaparece y se vacía)
-//   3) Teléfono: solo números y máximo 9 dígitos  |  DNI: solo números, máximo 8
-//   4) Freno antes de enviar: si algo está mal NO se envía y se marca el error
+//   2) Teléfono: solo números y máximo 9 dígitos  |  DNI: solo números, máximo 8
+//   3) Freno antes de enviar: si algo está mal NO se envía y se marca el error
 //
-// En "create" el formulario se envía DE VERDAD al servidor (POST normal). Aquí solo se valida antes.
+// Sirve para "Nueva solicitud" (create) y el "Detalle" editable (edit). El formulario se envía DE VERDAD
+// al servidor (POST normal); aquí solo se valida antes.
 
 /* ==========================================================================
    CONFIG
@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return; // en otras páginas no hace nada
 
     initServiceDocs(form);
-    initExtras(form);
     initPhone();
     initDni();
 
@@ -51,9 +50,15 @@ function initServiceDocs(form) {
         const hidden = row.querySelector('.doc-choice');   // valor "no" | "si"
         const file = row.querySelector('.doc-file');
         const buttons = row.querySelectorAll('.yn-btn');
+        const hint = row.querySelector('.doc-remove-hint'); // "Se eliminará el documento actual"
+        const hasDoc = row.dataset.hasDoc === '1';           // el servicio ya tenía documento guardado
 
-        // Servicios sin opción de documento (ej. la edición de demostración) se saltan
         if (!hidden || !file) return;
+
+        // El aviso solo se ve si tenía documento, el servicio está marcado y eligió "No"
+        const refreshHint = () => {
+            if (hint) hint.classList.toggle('d-none', !(hasDoc && checkbox.checked && hidden.value === 'no'));
+        };
 
         // Cambia entre "no" y "si": pinta el botón, muestra/oculta el archivo
         const setChoice = (value) => {
@@ -65,22 +70,34 @@ function initServiceDocs(form) {
             });
             row.classList.toggle('wants-doc', value === 'si');
 
-            // "No" => se descarta cualquier archivo
+            // "No" => se descarta el archivo que haya elegido ahora
             if (value === 'no') {
                 file.value = '';
                 setFileError(row, '');
             }
+            refreshHint();
         };
 
         buttons.forEach((b) => b.addEventListener('click', () => setChoice(b.dataset.choice)));
 
-        // Si desmarca el servicio, vuelve a "No"
+        // Al desmarcar el servicio vuelve a "No"; si lo marca de nuevo y tenía documento, se restaura "Sí"
+        let reseteadoPorDesmarcar = false;
         checkbox.addEventListener('change', () => {
-            if (!checkbox.checked) setChoice('no');
+            if (!checkbox.checked) {
+                reseteadoPorDesmarcar = hidden.value !== 'no';
+                setChoice('no');
+            } else if (reseteadoPorDesmarcar && hasDoc) {
+                setChoice('si');
+                reseteadoPorDesmarcar = false;
+            } else {
+                refreshHint();
+            }
         });
 
         // Valida el archivo apenas lo elige
         file.addEventListener('change', () => validateFile(row));
+
+        refreshHint();
     });
 }
 
@@ -96,6 +113,11 @@ function validateFile(row) {
     const file = row.querySelector('.doc-file').files[0];
 
     if (!file) {
+        // Si ya tenía documento guardado, "Sí" sin archivo nuevo = conservar el actual
+        if (row.dataset.hasDoc === '1') {
+            setFileError(row, '');
+            return true;
+        }
         setFileError(row, 'Adjunta el documento o elige "No".');
         return false;
     }
@@ -117,68 +139,7 @@ function validateDocs() {
 }
 
 /* ==========================================================================
-   2. DIRECCIÓN Y REFERENCIA: TEXTO O PDF
-   ========================================================================== */
-function initExtras(form) {
-    form.querySelectorAll('.extra-row').forEach((row) => {
-        const textBox = row.querySelector('.extra-text');
-        const fileBox = row.querySelector('.extra-file');
-        const textInput = textBox.querySelector('input');
-        const fileInput = fileBox.querySelector('input');
-        const buttons = row.querySelectorAll('.yn-btn');
-
-        const setMode = (mode) => {
-            buttons.forEach((b) => {
-                const active = b.dataset.choice === mode;
-                b.classList.toggle('is-active', active);
-                b.setAttribute('aria-pressed', active);
-            });
-            textBox.classList.toggle('d-none', mode !== 'texto');
-            fileBox.classList.toggle('d-none', mode !== 'pdf');
-
-            // Lo que se oculta se vacía: nunca viajan los dos al servidor
-            if (mode === 'texto') {
-                fileInput.value = '';
-                setExtraError(row, '');
-            } else {
-                textInput.value = '';
-            }
-        };
-
-        buttons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.choice)));
-        fileInput.addEventListener('change', () => validateExtra(row));
-    });
-}
-
-function setExtraError(row, msg) {
-    const box = row.querySelector('.extra-error');
-    if (!box) return;
-    box.textContent = msg;
-    box.classList.toggle('d-none', !msg);
-}
-
-// Aquí el archivo es opcional: solo se revisa si eligió uno
-function validateExtra(row) {
-    const file = row.querySelector('.extra-file input').files[0];
-    if (!file) {
-        setExtraError(row, '');
-        return true;
-    }
-    const msg = fileError(file);
-    setExtraError(row, msg);
-    return !msg;
-}
-
-function validateExtras() {
-    let ok = true;
-    document.querySelectorAll('.extra-row').forEach((row) => {
-        if (!validateExtra(row)) ok = false;
-    });
-    return ok;
-}
-
-/* ==========================================================================
-   3. TELÉFONO Y DNI
+   2. TELÉFONO Y DNI
    ========================================================================== */
 function initPhone() {
     const input = document.getElementById('phone');
@@ -236,7 +197,7 @@ function initDni() {
 }
 
 /* ==========================================================================
-   4. FRENO ANTES DE ENVIAR
+   3. FRENO ANTES DE ENVIAR
    ========================================================================== */
 function showFormError(msg) {
     const box = document.getElementById('formError');
@@ -245,7 +206,7 @@ function showFormError(msg) {
     box.classList.toggle('d-none', !msg);
 }
 
-// Al menos un servicio marcado (solo en "create": la edición de demostración lo revisa user.js)
+// Al menos un servicio marcado (los bloqueados cuentan: siguen marcados aunque estén deshabilitados)
 function validateServices(form) {
     const any = form.querySelector('.service-cb:checked');
     showFormError(any ? '' : 'Seleccione al menos un servicio.');
@@ -261,10 +222,9 @@ function guardSubmit(e) {
     // Se ejecutan todas (sin cortar en la primera) para mostrar todos los errores a la vez
     const phoneOk = validatePhone();
     const docsOk = validateDocs();
-    const extrasOk = validateExtras();
-    const servicesOk = form.dataset.mode === 'create' ? validateServices(form) : true;
+    const servicesOk = validateServices(form);
 
-    if (!phoneOk || !docsOk || !extrasOk || !servicesOk) {
+    if (!phoneOk || !docsOk || !servicesOk) {
         e.preventDefault();   // el formulario no se envía
         e.stopPropagation();  // y ningún otro script reacciona a este click
         document.querySelector('.field-error:not(.d-none), .form-error:not(.d-none)')

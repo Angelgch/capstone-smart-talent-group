@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Support\DemoData;
 use App\Http\Controllers\Admin\RequestController as AdminRequestController;
-//recien añadido el use use App\Http\Controllers\Admin\RequestController as AdminRequestController;; para la funcion de busqueda y filtro de solicitudes
+use App\Http\Controllers\User\AccountController as UserAccountController;
+use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,13 +86,6 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
     Route::view('/profile', 'user.profile')->name('profile');
     Route::view('/configuration', 'user.configuration')->name('configuration');
 
-    /*ANTIGUAS CAMBIADAS POR LA RAMA PRUEBA /Solicitudes (ver User\RequestController): matriz -> crear/guardar -> detalle
-    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
-    Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
-    Route::post('/requests', [RequestController::class, 'store'])->name('requests.store');
-    Route::get('/requests/{verificationRequest}', [RequestController::class, 'show'])
-        ->whereNumber('verificationRequest')->name('requests.show');*/
-
     // Solicitudes del usuario (User\RequestController)
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
     Route::get('/requests/export', [RequestController::class, 'export'])->name('requests.export');
@@ -165,35 +159,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 });
 
 
-// ========================================== BORRADOR EXAMPLE PROTOTYPE
+// ==========================================
 // RUTAS DE ADMINISTRADOR (Perfil y Config)
 // ==========================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::put('/profile', function () {
-        return back()->with('success', 'Perfil actualizado.');
-    })->name('profile.update');
-
-    Route::put('/password', function () {
-        return back()->with('success', 'Contraseña actualizada.');
-    })->name('password.update');
+    Route::put('/profile', [AdminAccountController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/password', [AdminAccountController::class, 'updatePassword'])->name('password.update');
 
     Route::put('/settings', function () {
         return back()->with('success', 'Configuración guardada.');
     })->name('settings.update');
 });
 
-
 // ==========================================
 // RUTAS DE CLIENTE / USER (Perfil y Config)
 // ==========================================
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
-    Route::put('/profile', function () {
-        return back()->with('success', 'Datos de empresa actualizados.');
-    })->name('profile.update');
-
-    Route::put('/password', function () {
-        return back()->with('success', 'Contraseña cambiada con éxito.');
-    })->name('password.update');
+    Route::put('/profile', [UserAccountController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/password', [UserAccountController::class, 'updatePassword'])->name('password.update');
+    Route::delete('/account', [UserAccountController::class, 'destroy'])->name('account.destroy');
 
     Route::put('/settings', function () {
         return back()->with('success', 'Preferencias guardadas.');
