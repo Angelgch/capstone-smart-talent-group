@@ -25,9 +25,17 @@
                 <h6>{{ $company->trade_name }}</h6>
                 <small>{{ $company->legal_name }} · RUC: {{ $company->ruc }}</small>
             </div>
-            <a href="{{ route('admin.companies.matrix', $company) }}" class="company-card-arrow" title="Ver matriz">
-                <i class="fas fa-arrow-right"></i>
-            </a>
+            
+            {{-- AQUÍ ESTÁ EL CAMBIO: Los dos botones (tuerca + flecha) --}}
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.companies.edit', $company) }}" class="company-card-arrow" title="Configurar empresa">
+                    <i class="fas fa-gear"></i>
+                </a>
+                <a href="{{ route('admin.companies.matrix', $company) }}" class="company-card-arrow" title="Ver matriz">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
         </div>
     </div>
     @empty

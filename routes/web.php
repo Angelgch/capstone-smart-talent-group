@@ -148,6 +148,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
     Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
+    Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+    Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update');
+    Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy');
     //AÑADIDAS EN LA RAMA PRUEBA PARA LA FUNCION DE BUSQUEDA Y FILTRO DE SOLICITUDES
     Route::get('/companies/{company}/matrix', [AdminRequestController::class, 'matrix'])->name('companies.matrix');
     Route::get('/companies/{company}/matrix/export', [AdminRequestController::class, 'export'])->name('companies.export');
