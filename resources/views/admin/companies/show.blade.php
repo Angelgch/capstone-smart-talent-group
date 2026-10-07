@@ -1,6 +1,6 @@
 {{-- resources/views/admin/companies/show.blade.php   (REEMPLAZA al anterior)
-     DETALLE del ADMIN: revisa los servicios que pidió el usuario, cambia su estado y sube los informes PDF.
-     Los archivos que envió el usuario NO se ven aquí: están en Descargas. --}}
+    DETALLE del ADMIN: revisa los servicios que pidió el usuario, cambia su estado y sube los informes PDF.
+    Los archivos que envió el usuario NO se ven aquí: están en Descargas. --}}
 @extends('layouts.admin')
 @section('title', 'Detalle de Solicitud')
 @section('page-title', 'Solicitud ' . $solicitud->code)
@@ -32,7 +32,7 @@
 </div>
 
 <form id="adminForm" method="POST" action="{{ route('admin.companies.requests.update', [$company, $solicitud]) }}"
-      enctype="multipart/form-data">
+    enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
@@ -113,7 +113,7 @@
             @if ($item)
                 @php $informe = $item->result; @endphp
                 <div class="row g-2 align-items-center border-bottom py-2 admin-service-row"
-                     data-has-informe="{{ $informe ? 1 : 0 }}">
+                    data-has-informe="{{ $informe ? 1 : 0 }}">
                     <div class="col-md-4 fw-semibold">{{ $s['full'] }}</div>
 
                     <div class="col-md-3">
@@ -130,11 +130,11 @@
                         @if ($informe)
                             <div class="small mb-1">
                                 <i class="fas fa-file-pdf text-danger me-1"></i>Informe actual:
-                                <a href="{{ route('files.download', [$informe, 'view' => 1]) }}" target="_blank" rel="noopener">{{ $informe->original_name }}</a>
+                                <a href="{{ route('admin.documents.download', [$informe, 'view' => 1]) }}" target="_blank" rel="noopener">{{ $informe->original_name }}</a>
                             </div>
                         @endif
                         <input type="file" class="form-control form-control-sm" name="informe[{{ $key }}]"
-                               accept=".pdf" aria-label="{{ $informe ? 'Reemplazar' : 'Subir' }} informe de {{ $s['full'] }}">
+                            accept=".pdf" aria-label="{{ $informe ? 'Reemplazar' : 'Subir' }} informe de {{ $s['full'] }}">
                     </div>
                 </div>
             @else

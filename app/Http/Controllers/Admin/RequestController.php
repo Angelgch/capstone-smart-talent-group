@@ -21,7 +21,7 @@ use Illuminate\Validation\ValidationException;
 class RequestController extends Controller
 {
     /* ----------------------------------------------------------------
-       MATRIZ (resumen) + EXCEL
+    MATRIZ (resumen) + EXCEL
        ---------------------------------------------------------------- */
     public function matrix(Request $request, Company $company)
     {
@@ -135,6 +135,8 @@ class RequestController extends Controller
                 } else {
                     $sol->refreshStatus();
                 }
+                // 📌 Actualiza la marca de tiempo (updated_at) para que suba en la actividad reciente NUEVOS
+                $sol->touch();
             });
         } catch (\Throwable $e) {
             foreach ($nuevos as $path) Storage::disk('local')->delete($path);

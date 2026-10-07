@@ -1,5 +1,5 @@
 {{-- resources/views/user/requests/matrix.blade.php   (antes index.blade.php)
-     MATRIZ del usuario = tabla RESUMEN de sus solicitudes. El detalle completo está en show.blade.php --}}
+    MATRIZ del usuario = tabla RESUMEN de sus solicitudes. El detalle completo está en show.blade.php --}}
 @extends('layouts.user')
 @section('title', 'Mis Solicitudes')
 @section('page-title', 'Mis Solicitudes')
@@ -19,7 +19,7 @@
 {{-- Buscador y filtro: funcionan por GET (?q=...&status=...) --}}
 <form method="GET" action="{{ route('user.requests.index') }}" class="filter-section">
     <input type="text" name="q" value="{{ request('q') }}" class="form-control" style="max-width:320px"
-           placeholder="Buscar por DNI, nombre o apellido...">
+        placeholder="Buscar por DNI, nombre o apellido...">
 
     <select name="status" class="form-select" style="max-width:200px">
         <option value="">Todos los estados</option>
@@ -71,15 +71,7 @@
                     </a>
 
                     {{-- Botón naranja: descargar los informes (.zip). Se activa cuando ya hay informes --}}
-                    @if ($s->results_count > 0)
-                        <a href="{{ route('files.zip', [$s, 'informe_admin']) }}" class="btn-icon btn-icon-files" title="Descargar informes (.zip)">
-                            <i class="fas fa-download"></i>
-                        </a>
-                    @else
-                        <span class="btn-icon btn-icon-files is-disabled" title="Aún no hay informes">
-                            <i class="fas fa-download"></i>
-                        </span>
-                    @endif
+                    <a href="{{ route('user.requests.downloads', $s) }}" class="btn-icon btn-icon-files" title="Descargas" aria-label="Descargas de {{ $s->code }}"><i class="fas fa-download"></i></a>
                     <button type="button" class="btn-icon btn-icon-delete" title="Eliminar solicitud"
                             data-bs-toggle="modal" data-bs-target="#deleteModal"
                             data-action="{{ route('user.requests.destroy', $s) }}" data-code="{{ $s->code }}">
@@ -113,7 +105,7 @@
                 <p>Se borrará la solicitud con todos sus documentos. Esta acción no se puede deshacer.</p>
                 <label class="form-label fw-semibold" for="deletePassword">Ingresa tu contraseña para confirmar</label>
                 <input type="password" class="form-control" id="deletePassword" name="password"
-                       autocomplete="current-password" required>
+                    autocomplete="current-password" required>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>

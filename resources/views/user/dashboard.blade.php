@@ -1,3 +1,6 @@
+{{-- resources/views/user/dashboard.blade.php   (REEMPLAZA al anterior)
+     Usa las mismas clases del dashboard del admin (stat-card, table-simple, dash-badge-*).
+     El buscador y el filtro los resuelve user.js con los ids dashSearch / dashStatus y la clase dash-row. --}}
 @extends('layouts.user')
 @section('title', 'Dashboard - Portal Cliente')
 @section('page-title', 'Dashboard')
@@ -6,23 +9,20 @@
 
 @php
     $cards = [
-        ['label' => 'Total enviadas', 'value' => $stats['total'],      'icon' => 'fa-paper-plane',    'color' => 'teal'],
-        ['label' => 'En Proceso',     'value' => $stats['proceso'],    'icon' => 'fa-spinner',        'color' => 'orange'],
-        ['label' => 'Realizadas',     'value' => $stats['realizadas'], 'icon' => 'fa-circle-check',   'color' => 'green'],
-        ['label' => 'Canceladas',     'value' => $stats['canceladas'], 'icon' => 'fa-ban',            'color' => 'red'],
+        ['label' => 'Pendientes',  'value' => $stats['pendientes'],  'icon' => 'fa-inbox',        'color' => 'red'],
+        ['label' => 'En Progreso', 'value' => $stats['progreso'],    'icon' => 'fa-spinner',      'color' => 'yellow'],
+        ['label' => 'Completadas', 'value' => $stats['completados'], 'icon' => 'fa-circle-check', 'color' => 'green'],
+        ['label' => 'Canceladas',  'value' => $stats['cancelados'],  'icon' => 'fa-ban',          'color' => 'gray'],
+    ];
+    $badge = [
+        'Pendiente'   => 'dash-badge-pendiente',
+        'En Progreso' => 'dash-badge-progreso',
+        'Completado'  => 'dash-badge-completado',
+        'Cancelado'   => 'dash-badge-cancelado',
     ];
 @endphp
 
-<div class="welcome-banner">
-    <div>
-        <h4>¡Bienvenido al Portal!</h4>
-        <p>Gestiona tus solicitudes de verificación y descarga tus documentos.</p>
-    </div>
-    <a href="{{ route('user.requests.create') }}" class="btn-new-request">
-        <i class="fas fa-plus-circle me-1"></i> Nueva solicitud
-    </a>
-</div>
-
+{{-- 1. Tarjetas: mis solicitudes por estado --}}
 <div class="row g-3 mb-3">
     @foreach ($cards as $card)
     <div class="col-6 col-lg-3">
@@ -37,55 +37,62 @@
     @endforeach
 </div>
 
+{{-- 2. Buscador y filtro --}}
 <div class="filter-section">
-    <input type="text" id="dashSearch" class="form-control" style="max-width:340px" placeholder="Buscar por DNI o nombre...">
+    <input type="text" id="dashSearch" class="form-control" style="max-width:340px" placeholder="Buscar por N°, DNI o candidato...">
     <select id="dashStatus" class="form-select" style="max-width:200px">
         <option value="">Todos los estados</option>
-        <option>En Proceso</option>
-        <option>Realizado</option>
+        <option>Pendiente</option>
+        <option>En Progreso</option>
+        <option>Completado</option>
         <option>Cancelado</option>
     </select>
-    <a href="{{ route('user.requests.index') }}" class="btn btn-gestionar ms-auto text-decoration-none">
-        <i class="fas fa-table me-1"></i> Ver todas
-    </a>
+    <a href="{{ route('user.requests.index') }}" class="btn btn-outline-secondary ms-auto">Ver todas mis solicitudes</a>
 </div>
 
+{{-- 3. Actividad reciente: las 5 que cambiaron último (ej. el admin actualizó un estado o subió un informe) --}}
 <div class="table-custom-container">
     <table class="table-simple">
         <thead>
             <tr>
+                <th>N° Solicitud</th>
                 <th>Candidato</th>
-                <th>Servicios solicitados</th>
-                <th>Fecha</th>
+                <th>Avance</th>
+                <th>Informes</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th>Última actualización</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($requests as $r)
-            <tr class="dash-row" data-search="{{ strtolower($r['dni'].' '.$r['name']) }}" data-status="{{ $r['status'] }}">
+            @forelse ($requests as $r)
+            <tr class="dash-row" data-search="{{ strtolower($r['code'] . ' ' . $r['dni'] . ' ' . $r['name']) }}" data-status="{{ $r['status'] }}">
+                <td class="fw-semibold">{{ $r['code'] }}</td>
                 <td>
                     <div class="fw-semibold">{{ $r['name'] }}</div>
                     <small class="text-muted">DNI: {{ $r['dni'] }}</small>
                 </td>
+                <td>{{ $r['done'] }} de {{ $r['total'] }} servicios completados</td>
                 <td>
-                    @php $keys = array_keys($r['services']); @endphp
-                    @foreach (array_slice($keys, 0, 3) as $k)
-                        <span class="doc-chip">{{ $services[$k]['short'] }}</span>
-                    @endforeach
-                    @if (count($keys) > 3)
-                        <span class="doc-chip doc-chip-more">+{{ count($keys) - 3 }}</span>
+                    @if ($r['informes'] > 0)
+                        <span class="doc-chip"><i class="fas fa-file-pdf text-danger me-1"></i>{{ $r['informes'] }} informe(s)</span>
+                    @else
+                        <span class="text-muted">—</span>
                     @endif
                 </td>
-                <td>{{ \Carbon\Carbon::parse($r['date'])->format('d/m/Y') }}</td>
-                <td><x-status-badge :status="$r['status']" /></td>
+                <td><span class="badge-status {{ $badge[$r['status']] ?? '' }}">{{ $r['status'] }}</span></td>
+                <td>{{ $r['updated']->format('d/m/Y H:i') }}</td>
                 <td>
-                    <a href="{{ route('user.requests.downloads', $r['dni']) }}" class="btn-icon btn-icon-files" title="Documentos">
-                        <i class="fas fa-warehouse"></i>
+                    <a href="{{ route('user.requests.show', $r['id']) }}" class="btn-gestionar text-decoration-none">
+                        <i class="fas fa-eye me-1"></i> Ver detalle
                     </a>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">Todavía no tienes solicitudes.</td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
 </div>

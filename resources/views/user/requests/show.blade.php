@@ -1,6 +1,6 @@
-{{-- resources/views/user/requests/show.blade.php   (REEMPLAZA al anterior)
-     DETALLE del USUARIO = su formulario de crear, con sus datos y documentos ya guardados.
-     El estado general es solo lectura (lo maneja el admin). Los informes del admin NO se ven aquí: están en Descargas. --}}
+{-- resources/views/user/requests/show.blade.php   (REEMPLAZA al anterior)
+    DETALLE del USUARIO = su formulario de crear, con sus datos y documentos ya guardados.
+    El estado general es solo lectura (lo maneja el admin). Los informes del admin NO se ven aquí: están en Descargas. --}
 @extends('layouts.user')
 @section('title', 'Detalle de Solicitud')
 @section('page-title', 'Solicitud ' . $solicitud->code)
@@ -33,7 +33,7 @@
 
         {{-- Solo lo que ÉL envió (los informes están en Descargas) --}}
         @if ($solicitud->services->contains(fn ($s) => $s->attachment))
-            <a href="{{ route('files.zip', [$solicitud, 'requisito_cliente']) }}" class="btn btn-excel btn-sm">
+            <a href="{{ route('user.requests.zip', [$solicitud, 'requisito_cliente']) }}" class="btn btn-excel btn-sm">
                 <i class="fas fa-file-zipper me-1"></i> Archivos enviados (.zip)
             </a>
         @endif
@@ -51,7 +51,7 @@
 @endunless
 
 <form id="requestForm" method="POST" action="{{ route('user.requests.update', $solicitud) }}"
-      enctype="multipart/form-data" data-mode="edit">
+    enctype="multipart/form-data" data-mode="edit">
     @csrf
     @method('PUT')
 
@@ -72,22 +72,22 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="email">Correo electrónico</label>
                     <input type="email" class="form-control" id="email" name="email" required
-                           value="{{ old('email', $solicitud->email) }}">
+                        value="{{ old('email', $solicitud->email) }}">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="names">Nombres</label>
                     <input type="text" class="form-control" id="names" name="names" required
-                           value="{{ old('names', $solicitud->names) }}">
+                        value="{{ old('names', $solicitud->names) }}">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="surnames">Apellidos</label>
                     <input type="text" class="form-control" id="surnames" name="surnames" required
-                           value="{{ old('surnames', $solicitud->surnames) }}">
+                        value="{{ old('surnames', $solicitud->surnames) }}">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="phone">Teléfono (máx. 9 dígitos)</label>
                     <input type="tel" class="form-control" id="phone" name="phone" required maxlength="9"
-                           inputmode="numeric" value="{{ old('phone', $solicitud->phone) }}">
+                        inputmode="numeric" value="{{ old('phone', $solicitud->phone) }}">
                     <small class="field-error d-none" id="phoneError" role="alert"></small>
                 </div>
             </div>
@@ -120,17 +120,17 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="address">Dirección domiciliaria</label>
                     <input type="text" class="form-control" id="address" name="address" maxlength="500"
-                           value="{{ old('address', $solicitud->address) }}">
+                        value="{{ old('address', $solicitud->address) }}">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" for="reference">Referencia domiciliaria</label>
                     <input type="text" class="form-control" id="reference" name="reference" maxlength="500"
-                           value="{{ old('reference', $solicitud->reference) }}">
+                        value="{{ old('reference', $solicitud->reference) }}">
                 </div>
                 <div class="col-12">
                     <label class="form-label fw-semibold" for="observations">Observaciones a tener en cuenta</label>
                     <textarea class="form-control" id="observations" name="observations" rows="3"
-                              maxlength="2000">{{ old('observations', $solicitud->observations) }}</textarea>
+                            maxlength="2000">{{ old('observations', $solicitud->observations) }}</textarea>
                 </div>
             </div>
         </div>
