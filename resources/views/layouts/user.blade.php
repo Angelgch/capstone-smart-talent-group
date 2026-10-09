@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- recien añadido -->
-
     <title>@yield('title', 'Portal Cliente - SmarTalent')</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.ico') }}">
-    <!-- ACCESIBILIDAD INICIO-->
+
+    <!-- ACCESIBILIDAD -->
     <script>
     (function () {
         try {
@@ -21,7 +20,7 @@
     })();
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic-regular.css">
-    <!-- ACCESIBILIDAD FIN -->
+    <!-- A -->
 
     <!-- Script Anti-Parpadeo (Tema Oscuro + Sidebar Colapsado) -->
     <script>
@@ -45,13 +44,14 @@
         'resources/js/user-edit.js',   // <-- nueva
         'resources/js/accessibility-user.js',   // <-- nueva
     ])
+
 </head>
 <body>
-
+    <a class="skip-link" href="#mainContent">Saltar al contenido</a>
     @include('components.navigationUser')
 
     <div class="app-container">
-        <main class="main-content" id="mainContent">
+        <main class="main-content" id="mainContent" tabindex="-1">
             <div class="p-4 flex-grow-1">
                 @yield('content')
             </div>

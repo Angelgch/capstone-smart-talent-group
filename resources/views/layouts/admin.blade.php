@@ -19,7 +19,7 @@
     })();
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic-regular.css">
-    <!-- ACCESIBILIDAD FIN -->
+    <!-- A -->
 
     <!-- Script Anti-Parpadeo (Tema Oscuro + Sidebar Colapsado) -->
     <script>
@@ -37,22 +37,23 @@
     @vite([
         'resources/css/admin.css', 
         'resources/js/admin.js', 
-        'resources/js/navigationAdmin.js'])
+        'resources/js/navigationAdmin.js',
         'resources/js/accessibility-admin.js',   // <-- nueva
+    ])
+
 </head>
 <body>
     <a class="skip-link" href="#mainContent">Saltar al contenido</a>
-    <main class="main-content" id="mainContent" tabindex="-1">
-
     @include('components.navigationAdmin')
 
     <div class="app-container">
-        <main class="main-content" id="mainContent">
+        <main class="main-content" id="mainContent" tabindex="-1">
             <div class="p-4 flex-grow-1">
                 @yield('content')
             </div>
         </main>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
