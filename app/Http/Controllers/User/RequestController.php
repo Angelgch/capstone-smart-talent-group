@@ -311,7 +311,7 @@ class RequestController extends Controller
                 'observations' => ['nullable', 'string', 'max:2000'],
                 'services'     => ['required', 'array', 'min:1'],
                 'services.*'   => ['string', Rule::in(ServiceCatalog::keys())],   // no se aceptan servicios inventados
-                'documents.*'  => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'], // 5 MB
+                'documents.*'  => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png', 'max:10240'], // 10 MB (o 20280 si prefieres 20MB)
             ]
         );
     }
@@ -323,8 +323,12 @@ class RequestController extends Controller
             'phone.digits_between' => 'El teléfono debe tener entre 7 y 9 dígitos.',
             'services.required'    => 'Seleccione al menos un servicio.',
             'services.min'         => 'Seleccione al menos un servicio.',
-            'documents.*.mimes'    => 'Los documentos deben ser PDF, JPG o PNG.',
-            'documents.*.max'      => 'Cada documento puede pesar máximo 5 MB.',
+            //'documents.*.mimes'    => 'Los documentos deben ser PDF, JPG o PNG.',
+            //'documents.*.max'      => 'Cada documento puede pesar máximo 5 MB.',
+            'documents.*.extensions' => 'Los documentos deben ser PDF, JPG o PNG.',
+            'documents.*.max' => 'Cada documento puede pesar máximo 10 MB.',
+            'documents.*.uploaded' => 'No se pudo subir un archivo: supera el tamaño que permite el servidor.',
+            
         ];
     }
 }

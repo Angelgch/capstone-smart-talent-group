@@ -1,16 +1,18 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\User\RequestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Support\DemoData;
+use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\User\RequestController;
 use App\Http\Controllers\Admin\RequestController as AdminRequestController;
 use App\Http\Controllers\User\AccountController as UserAccountController;
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\User\DocumentController as UserDocumentController;
+use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,11 +53,7 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login');
 })->name('logout');
 
-// Descarga de archivos: un archivo o todos en .zip (admin: cualquiera | user: solo los suyos)
-Route::middleware('auth')->group(function () {
-    Route::get('/files/{document}', [DocumentController::class, 'download'])->name('files.download');
-    Route::get('/requests/{verificationRequest}/zip/{kind}', [DocumentController::class, 'zip'])->name('files.zip');
-});
+
 
 // Redirección por defecto si alguien entra manualmente a la URL base /admin
 Route::redirect('/admin', '/admin/dashboard');
@@ -67,22 +65,10 @@ Route::redirect('/admin', '/admin/dashboard');
 // ==========================================
 Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        $all = collect(DemoData::userRequests())->sortByDesc('date')->values();
+    // Dashboard del usuario
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
-        return view('user.dashboard', [
-            'stats' => [
-                'total'      => $all->count(),
-                'proceso'    => $all->where('status', 'En Proceso')->count(),
-                'realizadas' => $all->where('status', 'Realizado')->count(),
-                'canceladas' => $all->where('status', 'Cancelado')->count(),
-            ],
-            'requests' => $all->take(5), // máximo 5
-            'services' => DemoData::services(),   // TEMPORAL (dashboard aún con DemoData)
-        ]);
-    })->name('dashboard');
-
-      // Perfil y configuración (provisionales: "Módulo en desarrollo")//ULTIMO AÑADIDO
+    // Perfil y configuración
     Route::view('/profile', 'user.profile')->name('profile');
     Route::view('/configuration', 'user.configuration')->name('configuration');
 
@@ -95,26 +81,11 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
     Route::put('/requests/{solicitud}', [RequestController::class, 'update'])->whereNumber('solicitud')->name('requests.update');
     Route::delete('/requests/{solicitud}', [RequestController::class, 'destroy'])->whereNumber('solicitud')->name('requests.destroy');
 
-    // TEMPORAL (siguen con DemoData hasta que el detalle sea editable): editar y documentos de demostración
-    Route::get('/requests/{dni}/edit', function ($dni) {
-        $c = DemoData::candidate($dni);
+    // Documentos y descargas (User\DocumentController)
+    Route::get('/requests/{solicitud}/downloads', [UserDocumentController::class, 'index'])->whereNumber('solicitud')->name('requests.downloads');
+    Route::get('/requests/{solicitud}/zip/{type}', [UserDocumentController::class, 'zip'])->whereNumber('solicitud')->name('requests.zip');
+    Route::get('/documents/{document}', [UserDocumentController::class, 'download'])->whereNumber('document')->name('documents.download');
 
-        // Separa nombre completo: últimos 2 = apellidos, el resto = nombres
-        $parts = explode(' ', trim($c['name']));
-        $c['surnames'] = implode(' ', array_slice($parts, -2));
-        $c['names']    = implode(' ', array_slice($parts, 0, -2));
-        $c['email']    = 'candidato@correo.com'; // demo
-        $c['phone']    = '999 999 999';          // demo
-
-        return view('user.requests.edit', ['candidate' => $c, 'services' => DemoData::services()]);
-    })->name('requests.edit');
-
-    Route::get('/requests/{dni}/downloads', function ($dni) {
-        return view('user.requests.downloads', [
-            'candidate' => DemoData::candidate($dni),
-            'services'  => DemoData::services(),
-        ]);
-    })->name('requests.downloads');
 });
 
 
@@ -124,21 +95,7 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
 // ==========================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
 
-    Route::get('/dashboard', function () {
-    $all = collect(DemoData::requests())->sortByDesc('date')->values();
-
-    $stats = [
-        'pendientes'  => $all->where('status', 'Pendiente')->count(),
-        'progreso'    => $all->where('status', 'En Progreso')->count(),
-        'completados' => $all->where('status', 'Completado')->count(),
-        'cancelados'  => $all->where('status', 'Cancelado')->count(),
-    ];
-
-    return view('admin.dashboard', [
-        'stats'    => $stats,
-        'requests' => $all->take(5), // máximo 5: al entrar una nueva, la más vieja sale
-    ]);
-})->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Perfil y configuración (provisionales: "Módulo en desarrollo")//ULTIMO AÑADIDO
     Route::view('/profile', 'admin.profile')->name('profile');
@@ -157,6 +114,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/companies/{company}/requests/{solicitud}', [AdminRequestController::class, 'show'])->whereNumber('solicitud')->name('companies.requests.show');
     Route::put('/companies/{company}/requests/{solicitud}', [AdminRequestController::class, 'update'])->whereNumber('solicitud')->name('companies.requests.update');
     
+    Route::get('/companies/{company}/requests/{solicitud}/downloads', [AdminDocumentController::class, 'index'])->whereNumber('solicitud')->name('companies.requests.downloads');
+    Route::get('/companies/{company}/requests/{solicitud}/zip/{type}', [AdminDocumentController::class, 'zip'])->whereNumber('solicitud')->name('companies.requests.zip');
+    Route::get('/documents/{document}', [AdminDocumentController::class, 'download'])->whereNumber('document')->name('documents.download');
     /*Route::get('/companies/{company}/matrix', [CompanyController::class, 'matrix'])->name('companies.matrix');
     Route::get('/companies/{company}/requests/{verificationRequest}', [CompanyController::class, 'show'])->name('companies.requests.show');*/
 });

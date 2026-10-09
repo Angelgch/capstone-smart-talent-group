@@ -259,3 +259,9 @@
 
 .extra-row { margin-bottom: 18px; }
 .extra-row:last-child { margin-bottom: 0; }
+
+/* Servicios del detalle: filas separadas por línea (como en el detalle del admin) */
+.service-rows.plain { gap: 0; }
+.service-rows.plain .service-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.service-rows.plain .service-check { padding: 0; border: none; background: transparent; }
+.service-rows.plain .service-check:has(input:checked) { background: transparent; }

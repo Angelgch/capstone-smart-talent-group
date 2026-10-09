@@ -58,15 +58,7 @@
                     </a>
 
                     {{-- Botón naranja: descargar los archivos que envió el usuario (.zip) --}}
-                    @if ($s->attachments_count > 0)
-                        <a href="{{ route('files.zip', [$s, 'requisito_cliente']) }}" class="btn-icon btn-icon-files" title="Descargar archivos del usuario (.zip)">
-                            <i class="fas fa-download"></i>
-                        </a>
-                    @else
-                        <span class="btn-icon btn-icon-files is-disabled" title="El usuario no envió archivos">
-                            <i class="fas fa-download"></i>
-                        </span>
-                    @endif
+                    <a href="{{ route('admin.companies.requests.downloads', [$company, $s]) }}" class="btn-icon btn-icon-files" title="Descargas" aria-label="Descargas de {{ $s->code }}"><i class="fas fa-download"></i></a>
                 </td>
             </tr>
             @empty

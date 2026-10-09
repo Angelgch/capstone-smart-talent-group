@@ -1,12 +1,12 @@
 {{-- resources/views/user/requests/serviceRows.blade.php
-     Filas de servicios del USUARIO. Las usan "Nueva solicitud" (formCreate) y el "Detalle" (show).
-     $solicitud = null al crear; con datos al editar. --}}
+    Filas de servicios del USUARIO. Las usan "Nueva solicitud" (formCreate) y el "Detalle" (show).
+    $solicitud = null al crear; con datos al editar. --}}
 @php
     $lastGroup = null;
     $oldMarked = old('services');   // si el formulario volvió con errores, se respetan sus marcas
 @endphp
 
-<div class="service-rows" id="servicesCheckboxes">
+<div class="service-rows {{ ($plain ?? false) ? 'plain' : '' }}" id="servicesCheckboxes">
     @foreach ($services as $key => $s)
         @php
             $item    = $solicitud?->item($key);        // null = servicio no pedido
@@ -26,12 +26,12 @@
         @php $lastGroup = $group; @endphp
 
         <div class="service-row {{ $choice === 'si' ? 'wants-doc' : '' }}"
-             data-service="{{ $key }}" data-status="{{ $status }}" data-has-doc="{{ $doc ? 1 : 0 }}">
+            data-service="{{ $key }}" data-status="{{ $status }}" data-has-doc="{{ $doc ? 1 : 0 }}">
 
             {{-- Columna 1: check + nombre + estado actual --}}
             <label class="service-check {{ $locked ? 'is-locked' : '' }}">
                 <input type="checkbox" class="service-cb" name="services[]" value="{{ $key }}"
-                       @checked($checked) @disabled($locked)>
+                    @checked($checked) @disabled($locked)>
                 <span class="check-icon"><i class="fas fa-check"></i></span>
                 <span>{{ $s['full'] }}</span>
                 @if ($status)
@@ -65,13 +65,13 @@
                     @if ($doc)
                         <div class="small mb-1">
                             <i class="fas fa-paperclip me-1"></i>Actual:
-                            <a href="{{ route('files.download', [$doc, 'view' => 1]) }}" target="_blank" rel="noopener">{{ $doc->original_name }}</a>
+                            <a href="{{ route('user.documents.download', [$doc, 'view' => 1]) }}" target="_blank" rel="noopener">{{ $doc->original_name }}</a>
                         </div>
                     @endif
                     <input type="file" class="form-control form-control-sm doc-file"
-                           id="doc_file_{{ $key }}" name="documents[{{ $key }}]"
-                           accept=".pdf,.jpg,.jpeg,.png"
-                           aria-label="{{ $doc ? 'Reemplazar' : 'Adjuntar' }} documento de {{ $s['full'] }}">
+                        id="doc_file_{{ $key }}" name="documents[{{ $key }}]"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        aria-label="{{ $doc ? 'Reemplazar' : 'Adjuntar' }} documento de {{ $s['full'] }}">
                     @if ($doc)
                         <small class="text-muted">Elige otro archivo solo si quieres reemplazar el actual.</small>
                     @endif

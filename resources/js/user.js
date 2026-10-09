@@ -1,34 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initRequestForm();
     initDashboardFilter();
 });
-
-/* Formulario de solicitud (create / edit): valida y simula el guardado */
-function initRequestForm() {
-    const form = document.getElementById('requestForm');
-    const btn = document.getElementById('btnSubmitRequest');
-    const error = document.getElementById('formError');
-    if (!form || !btn) return;
-
-    if (form.dataset.mode === 'create') return; // en "create" el formulario se envía de verdad (user-create.js lo valida)
-
-    btn.addEventListener('click', () => {
-        error.classList.add('d-none');
-
-        if (!form.reportValidity()) return; // validaciones nativas (DNI, correo, etc.)
-
-        const checked = form.querySelectorAll('#servicesCheckboxes input:checked').length;
-        if (checked === 0) {
-            error.textContent = 'Seleccione al menos un servicio.';
-            error.classList.remove('d-none');
-            error.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-        }
-
-        alert(form.dataset.message);
-        window.location.href = form.dataset.return;
-    });
-}
 
 /* Dashboard: filtra las filas visibles por DNI/nombre y estado */
 function initDashboardFilter() {
