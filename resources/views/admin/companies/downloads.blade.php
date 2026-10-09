@@ -52,9 +52,9 @@
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <span class="small"><i class="fas fa-paperclip me-1"></i>{{ $doc->original_name }}</span>
                         <a href="{{ route('admin.documents.download', [$doc, 'view' => 1]) }}" target="_blank" rel="noopener"
-                        class="btn-icon btn-icon-view" title="Visualizar" aria-label="Visualizar archivo de {{ $s['full'] }}"><i class="fas fa-eye"></i></a>
+                           class="btn-icon btn-icon-view" title="Visualizar" aria-label="Visualizar archivo de {{ $s['full'] }}"><i class="fas fa-eye"></i></a>
                         <a href="{{ route('admin.documents.download', $doc) }}"
-                        class="btn-icon btn-icon-files" title="Descargar" aria-label="Descargar archivo de {{ $s['full'] }}"><i class="fas fa-download"></i></a>
+                           class="btn-icon btn-icon-files" title="Descargar" aria-label="Descargar archivo de {{ $s['full'] }}"><i class="fas fa-download"></i></a>
                     </div>
                 @else
                     <span class="text-muted small">El usuario no envió documento</span>

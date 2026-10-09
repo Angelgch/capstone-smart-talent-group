@@ -64,7 +64,7 @@
         </h5>
 
         <p class="text-muted small mb-3">
-            El documento es opcional. Elige <strong>Sí</strong> solo si quieres adjuntarlo ahora (PDF, JPG o PNG, máx. 5 MB).
+            El documento es opcional. Elige <strong>Sí</strong> solo si quieres adjuntarlo ahora (PDF, JPG o PNG, máx. 10 MB).
         </p>
 
         {{-- id="servicesCheckboxes": lo usan los scripts para contar los servicios marcados --}}

@@ -17,7 +17,9 @@ export default defineConfig({
                 'resources/js/navigationAdmin.js',
                 'resources/js/navigationUser.js',
                 'resources/js/user-create.js',
-                'resources/js/user-edit.js'
+                'resources/js/user-edit.js',
+                'resources/js/accessibility-user.js',
+                'resources/js/accessibility-admin.js'
             ],
             refresh: true,
         }),

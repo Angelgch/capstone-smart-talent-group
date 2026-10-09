@@ -8,6 +8,20 @@
 
     <title>@yield('title', 'Portal Cliente - SmarTalent')</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.ico') }}">
+    <!-- ACCESIBILIDAD INICIO-->
+    <script>
+    (function () {
+        try {
+            var p = JSON.parse(localStorage.getItem('a11y_user') || '{}'), h = document.documentElement;   // en admin: 'a11y_admin'
+            if (p.size && p.size !== 100) h.style.fontSize = p.size + '%';
+            var map = { dyslexic: 'a11y-dyslexic', spacing: 'a11y-spacing', contrast: 'a11y-contrast',
+                        grayscale: 'a11y-grayscale', links: 'a11y-links', motion: 'a11y-reduce-motion' };
+            for (var k in map) if (p[k]) h.classList.add(map[k]);
+        } catch (e) {}
+    })();
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic-regular.css">
+    <!-- ACCESIBILIDAD FIN -->
 
     <!-- Script Anti-Parpadeo (Tema Oscuro + Sidebar Colapsado) -->
     <script>
@@ -29,6 +43,7 @@
         'resources/js/navigationUser.js',
         'resources/js/user-create.js',
         'resources/js/user-edit.js',   // <-- nueva
+        'resources/js/accessibility-user.js',   // <-- nueva
     ])
 </head>
 <body>

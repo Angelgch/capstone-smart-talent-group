@@ -1,6 +1,6 @@
 <?php
 
-// app/Support/DocumentFiles.php
+// app/Support/DocumentFiles.php   (REEMPLAZA al anterior)
 // Utilidad técnica para ENTREGAR archivos (uno solo o varios en .zip) desde el storage privado.
 // OJO: aquí NO hay permisos. Quién puede pedir qué lo decide cada controlador (User\ y Admin\).
 
@@ -19,9 +19,27 @@ class DocumentFiles
         $disk = Storage::disk('local');
         abort_unless($disk->exists($doc->file_path), 404, 'El archivo no está disponible.');
 
-        return $inline
-            ? $disk->response($doc->file_path, $doc->original_name)
-            : $disk->download($doc->file_path, $doc->original_name);
+        if (! $inline) {
+            return $disk->download($doc->file_path, $doc->original_name);
+        }
+
+        // Al visualizar, el tipo se decide por la EXTENSIÓN permitida (no por el contenido del archivo)
+        // y "nosniff" evita que el navegador lo reinterprete. Así un archivo disfrazado no se ejecuta.
+        $mime = match (strtolower(pathinfo($doc->original_name, PATHINFO_EXTENSION))) {
+            'pdf'         => 'application/pdf',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png'         => 'image/png',
+            default       => null,
+        };
+
+        if (! $mime) {
+            return $disk->download($doc->file_path, $doc->original_name); // tipo desconocido: solo descarga
+        }
+
+        return $disk->response($doc->file_path, $doc->original_name, [
+            'Content-Type'           => $mime,
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     // Varios archivos en un .zip (solo los que existen en disco)

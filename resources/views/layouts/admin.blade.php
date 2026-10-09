@@ -6,6 +6,21 @@
     <title>@yield('title', 'Panel de Administración - SmarTalent')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo.ico') }}">
 
+    <!-- ACCESIBILIDAD INICIO-->
+    <script>
+    (function () {
+        try {
+            var p = JSON.parse(localStorage.getItem('a11y_admin') || '{}'), h = document.documentElement;   // en admin: 'a11y_admin'
+            if (p.size && p.size !== 100) h.style.fontSize = p.size + '%';
+            var map = { dyslexic: 'a11y-dyslexic', spacing: 'a11y-spacing', contrast: 'a11y-contrast',
+                        grayscale: 'a11y-grayscale', links: 'a11y-links', motion: 'a11y-reduce-motion' };
+            for (var k in map) if (p[k]) h.classList.add(map[k]);
+        } catch (e) {}
+    })();
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic-regular.css">
+    <!-- ACCESIBILIDAD FIN -->
+
     <!-- Script Anti-Parpadeo (Tema Oscuro + Sidebar Colapsado) -->
     <script>
         if (localStorage.getItem("theme") === "dark") {
@@ -23,8 +38,11 @@
         'resources/css/admin.css', 
         'resources/js/admin.js', 
         'resources/js/navigationAdmin.js'])
+        'resources/js/accessibility-admin.js',   // <-- nueva
 </head>
 <body>
+    <a class="skip-link" href="#mainContent">Saltar al contenido</a>
+    <main class="main-content" id="mainContent" tabindex="-1">
 
     @include('components.navigationAdmin')
 

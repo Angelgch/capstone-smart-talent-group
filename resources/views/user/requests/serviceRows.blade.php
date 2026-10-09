@@ -6,7 +6,7 @@
     $oldMarked = old('services');   // si el formulario volvió con errores, se respetan sus marcas
 @endphp
 
-<div class="service-rows" id="servicesCheckboxes">
+<div class="service-rows {{ ($plain ?? false) ? 'plain' : '' }}" id="servicesCheckboxes">
     @foreach ($services as $key => $s)
         @php
             $item    = $solicitud?->item($key);        // null = servicio no pedido

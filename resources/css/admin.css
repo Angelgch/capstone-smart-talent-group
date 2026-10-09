@@ -588,3 +588,56 @@ body.sidebar-is-collapsed .main-content {
 /*-----boton de eliminar===================*/
 .btn-icon-delete { border: none; background: rgba(255, 59, 48, .12); color: #ff3b30; cursor: pointer; }
 .btn-icon-delete:hover { background: rgba(255, 59, 48, .22); }
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+ACCESIBILIDAD: foco visible, enlace "Saltar al contenido" y opciones del panel flotante.
+Si aún tienes las clases viejas (html.high-contrast, body.font-dyslexic, etc.), puedes borrarlas.
+========================================================================== */
+
+/* Foco siempre visible al navegar con teclado */
+:focus-visible { outline: 3px solid #FA8A24; outline-offset: 2px; }
+
+/* "Saltar al contenido": solo aparece al enfocarlo con Tab */
+.skip-link { position: absolute; left: -9999px; top: 8px; z-index: 3000; padding: 8px 14px;
+            background: #fff; color: #212529; border-radius: 8px; font-weight: 600; }
+.skip-link:focus { left: 8px; }
+
+/* Botón del panel activado */
+#a11yWidget .dropdown-item[aria-pressed="true"] { background: rgba(48, 193, 172, .18); font-weight: 700; }
+#a11yWidget .dropdown-item[aria-pressed="true"]::after { content: " ✓"; }
+
+/* Fuente para dislexia (necesita el <link> de OpenDyslexic en el layout). No usa "*" para no romper los íconos */
+html.a11y-dyslexic body,
+html.a11y-dyslexic input, html.a11y-dyslexic select, html.a11y-dyslexic textarea,
+html.a11y-dyslexic button, html.a11y-dyslexic table {
+    font-family: 'OpenDyslexic', 'OpenDyslexicRegular', sans-serif !important;
+}
+
+/* Espaciado recomendado por WCAG 1.4.12 */
+html.a11y-spacing body { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.7 !important; }
+
+/* Alto contraste y escala de grises (se pueden combinar). El filtro va en <html> para no afectar a los elementos fijos */
+html.a11y-contrast  { --a11y-f1: contrast(1.6); }
+html.a11y-grayscale { --a11y-f2: grayscale(1); }
+html.a11y-contrast, html.a11y-grayscale { filter: var(--a11y-f1, ) var(--a11y-f2, ); }
+
+/* Resaltar enlaces */
+html.a11y-links a:not(.btn):not(.btn-icon) { text-decoration: underline !important; text-underline-offset: 3px; }
+
+/* Reducir animaciones (por el panel o porque el sistema operativo ya lo pide) */
+html.a11y-reduce-motion *, html.a11y-reduce-motion *::before, html.a11y-reduce-motion *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

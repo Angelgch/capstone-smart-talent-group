@@ -78,11 +78,12 @@ class RequestController extends Controller
         $data = $request->validate([
             'status'         => ['array'],
             'status.*'       => ['nullable', Rule::in(['en_espera', 'en_progreso', 'realizado', 'cancelado'])],
-            'informe.*'      => ['nullable', 'file', 'mimes:pdf', 'max:10240'],   // solo PDF, 10 MB
+            'informe.*'      => ['nullable', 'file', 'extensions:pdf', 'max:10240'],   // solo PDF, 10 MB
             'general_status' => ['nullable', Rule::in(['en_espera', 'en_progreso', 'realizado', 'cancelado'])],
         ], [
-            'informe.*.mimes' => 'Los informes deben ser PDF.',
-            'informe.*.max'   => 'Cada informe puede pesar máximo 10 MB.',
+            'informe.*.extensions' => 'Los informes deben ser PDF.',
+            'informe.*.max'        => 'Cada informe puede pesar máximo 10 MB.',
+            'informe.*.uploaded'   => 'No se pudo subir un informe: supera el tamaño que permite el servidor.',
         ]);
 
         $nuevos  = [];  // informes guardados ahora (si algo falla, se borran)

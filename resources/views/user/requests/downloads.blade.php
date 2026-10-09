@@ -58,9 +58,9 @@
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <span class="small"><i class="fas fa-file-pdf text-danger me-1"></i>{{ $informe->original_name }}</span>
                         <a href="{{ route('user.documents.download', [$informe, 'view' => 1]) }}" target="_blank" rel="noopener"
-                        class="btn-icon btn-icon-view" title="Visualizar" aria-label="Visualizar informe de {{ $s['full'] }}"><i class="fas fa-eye"></i></a>
+                           class="btn-icon btn-icon-view" title="Visualizar" aria-label="Visualizar informe de {{ $s['full'] }}"><i class="fas fa-eye"></i></a>
                         <a href="{{ route('user.documents.download', $informe) }}"
-                        class="btn-icon btn-icon-files" title="Descargar" aria-label="Descargar informe de {{ $s['full'] }}"><i class="fas fa-download"></i></a>
+                           class="btn-icon btn-icon-files" title="Descargar" aria-label="Descargar informe de {{ $s['full'] }}"><i class="fas fa-download"></i></a>
                     </div>
                 @elseif ($item)
                     <span class="text-muted small">Pendiente</span>

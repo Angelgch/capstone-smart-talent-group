@@ -10,7 +10,7 @@
 /* ==========================================================================
    CONFIG
    ========================================================================== */
-const MAX_FILE_MB = 5;
+const MAX_FILE_MB = 10;
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 const PHONE_MAX_DIGITS = 9; // límite de dígitos del teléfono
 const PHONE_MIN_DIGITS = 7; // mínimo aceptado (otros países pueden tener menos de 9)
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
    Utilidad: revisa un archivo. Devuelve el mensaje de error o '' si está bien
    ========================================================================== */
 function fileError(file) {
-    if (!ALLOWED_TYPES.includes(file.type)) return 'Formato no permitido. Usa PDF, JPG o PNG.';
+    if (!/\.(pdf|jpe?g|png)$/i.test(file.name)) return 'Formato no permitido. Usa PDF, JPG o PNG.';
     if (file.size > MAX_FILE_MB * 1024 * 1024) return `El archivo supera los ${MAX_FILE_MB} MB.`;
     return '';
 }
