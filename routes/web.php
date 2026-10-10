@@ -8,6 +8,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 // Si alguien escribe /admin a mano, lo mandamos al dashboard
 Route::redirect('/admin', '/admin/dashboard');
 
