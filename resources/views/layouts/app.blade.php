@@ -22,9 +22,9 @@
 
     <!-- Carga de CSS/JS dinámico según el rol del usuario -->
     @if(auth()->check() && auth()->user()->role === 'admin')
-        @vite(['resources/css/admin.css', 'resources/js/admin.js'])
+        @vite(['resources/css/admin.css', 'resources/js/admin/admin.js'])
     @else
-        @vite(['resources/css/user.css', 'resources/js/user.js'])
+        @vite(['resources/css/user.css', 'resources/js/user/user.js'])
     @endif
 </head>
 <body class="{{ session('sidebar_collapsed', false) ? 'sidebar-is-collapsed' : '' }}">

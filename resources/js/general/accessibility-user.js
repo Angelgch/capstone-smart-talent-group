@@ -1,4 +1,4 @@
-// resources/js/accessibility-user.js
+// resources/js/general/accessibility-user.js
 // Panel de accesibilidad (botón flotante abajo a la derecha) para el USUARIO.
 // No necesita HTML en el layout: el botón se crea solo. Las preferencias se guardan en el navegador (localStorage).
 //
