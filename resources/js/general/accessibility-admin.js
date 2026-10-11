@@ -1,4 +1,4 @@
-// resources/js/accessibility-admin.js
+// resources/js/general/accessibility-admin.js
 // Panel de accesibilidad (botón flotante abajo a la derecha) para el ADMINISTRADOR.
 // No necesita HTML en el layout: el botón se crea solo. Las preferencias se guardan en el navegador (localStorage).
 //

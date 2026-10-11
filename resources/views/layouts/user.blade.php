@@ -38,11 +38,11 @@
     @vite([
         'resources/css/admin.css',
         'resources/css/user.css',
-        'resources/js/user.js',
-        'resources/js/navigationUser.js',
-        'resources/js/user-create.js',
-        'resources/js/user-edit.js',   // <-- nueva
-        'resources/js/accessibility-user.js',   // <-- nueva
+        'resources/js/user/user.js',
+        'resources/js/general/navigationUser.js',
+        'resources/js/user/user-create.js',
+        'resources/js/user/user-edit.js',   // <-- nueva
+        'resources/js/general/accessibility-user.js',   // <-- nueva
     ])
 
 </head>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- recien añadido -->
     <title>@yield('title', 'Panel de Administración - SmarTalent')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo.ico') }}">
 
@@ -36,9 +37,9 @@
 
     @vite([
         'resources/css/admin.css', 
-        'resources/js/admin.js', 
-        'resources/js/navigationAdmin.js',
-        'resources/js/accessibility-admin.js',   // <-- nueva
+        'resources/js/admin/admin.js', 
+        'resources/js/general/navigationAdmin.js',
+        'resources/js/general/accessibility-admin.js',   // <-- nueva
     ])
 
 </head>

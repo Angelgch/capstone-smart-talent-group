@@ -1,6 +1,6 @@
 /* ==========================================================================
 admin.js — Lógica de las páginas del admin
-(Sidebar, tema oscuro y devAlert viven en navigationAdmin.js)
+(Sidebar, tema oscuro y devAlert viven en  general/navigationAdmin.js)
 ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,7 +1,7 @@
 <?php
 
 // app/Http/Controllers/AuthController.php   (REEMPLAZA el anterior)
-// Registro y login reales contra la BD. Responde JSON porque login.js usa fetch (la página no se recarga).
+// Registro y login reales contra la BD. Responde JSON porque /auth/login.js usa fetch (la página no se recarga).
 
 namespace App\Http\Controllers;
 
