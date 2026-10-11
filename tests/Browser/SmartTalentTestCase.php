@@ -32,6 +32,14 @@ abstract class SmartTalentTestCase extends DuskTestCase
         });
     }
 
+    // Cierra Chrome al terminar cada prueba. Dusk reutiliza el mismo navegador entre pruebas de una clase,
+    // y entonces la sesión (y las preferencias de accesibilidad) de la prueba anterior se quedaban abiertas.
+    protected function tearDown(): void
+    {
+        static::closeAll();
+        parent::tearDown();
+    }
+
     protected function admin(): User
     {
         return User::where('email', 'admin@gmail.com')->firstOrFail();

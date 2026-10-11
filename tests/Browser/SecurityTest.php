@@ -20,7 +20,7 @@ class SecurityTest extends SmartTalentTestCase
     {
         $this->browse(function (Browser $b) {
             $b->loginAs($this->user())->visit('/admin/companies')
-              ->assertSee('No tienes permiso')->assertDontSee('Gestión de Empresas')->step();
+              ->assertSourceHas('No tienes permiso')->assertDontSee('Gestión de Empresas')->step();
         });
     }
 

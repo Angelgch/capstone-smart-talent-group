@@ -52,8 +52,9 @@ class UserRequestsTest extends SmartTalentTestCase
             $b->loginAs($this->user())->visit('/user/requests')
               ->assertSee('Zulema')->assertSee('Bruno')->step()
               ->type('input[name=q]', 'Zulema')->press('Filtrar')
-              ->assertSee('Zulema')->assertDontSee('Bruno')->step()
-              ->clickLink('Limpiar')->assertSee('Bruno')->step();
+              ->waitUntilMissingText('Bruno')->assertSee('Zulema')->step()
+              ->clickLink('Limpiar')
+              ->waitForText('Bruno')->assertSee('Zulema')->step();
         });
     }
 
@@ -76,4 +77,4 @@ class UserRequestsTest extends SmartTalentTestCase
 
         $this->assertDatabaseMissing('requests', ['id' => $solicitud->id]);
     }
-}   
+}
