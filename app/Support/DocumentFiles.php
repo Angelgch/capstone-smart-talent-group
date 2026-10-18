@@ -25,12 +25,7 @@ class DocumentFiles
 
         // Al visualizar, el tipo se decide por la EXTENSIÓN permitida (no por el contenido del archivo)
         // y "nosniff" evita que el navegador lo reinterprete. Así un archivo disfrazado no se ejecuta.
-        $mime = match (strtolower(pathinfo($doc->original_name, PATHINFO_EXTENSION))) {
-            'pdf'         => 'application/pdf',
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png'         => 'image/png',
-            default       => null,
-        };
+        $mime = self::mimeType($doc->original_name);
 
         if (! $mime) {
             return $disk->download($doc->file_path, $doc->original_name); // tipo desconocido: solo descarga
@@ -60,5 +55,26 @@ class DocumentFiles
         $zip->close();
 
         return response()->download($zipPath, $filename)->deleteFileAfterSend(true);
+    }
+
+    // Obtiene el MIME type según la extensión permitida (evita ejecución de scripts)
+    public static function mimeType(?string $filename): ?string
+    {
+        if (! $filename) {
+            return null;
+        }
+
+        return match (strtolower(pathinfo($filename, PATHINFO_EXTENSION))) {
+            'pdf'         => 'application/pdf',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png'         => 'image/png',
+            default       => null,
+        };
+    }
+
+    // Comprueba si el archivo tiene una extensión permitida en el sistema
+    public static function isAllowedExtension(?string $filename): bool
+    {
+        return self::mimeType($filename) !== null;
     }
 }

@@ -19,9 +19,9 @@
     <div class="col-lg-3">
         <div class="list-group">
             <span class="list-group-item active"><i class="fas fa-user me-2"></i>Tu cuenta</span>
-            <span class="list-group-item disabled"><i class="fas fa-shield-halved me-2"></i>Privacidad y seguridad <small class="d-block">Próximamente</small></span>
+            <!-- <span class="list-group-item disabled"><i class="fas fa-shield-halved me-2"></i>Privacidad y seguridad <small class="d-block">Próximamente</small></span>
             <span class="list-group-item disabled"><i class="fas fa-bell me-2"></i>Notificaciones <small class="d-block">Próximamente</small></span>
-            <span class="list-group-item disabled"><i class="fas fa-circle-question me-2"></i>Centro de ayuda <small class="d-block">Próximamente</small></span>
+            <span class="list-group-item disabled"><i class="fas fa-circle-question me-2"></i>Centro de ayuda <small class="d-block">Próximamente</small></span> -->
         </div>
     </div>
 

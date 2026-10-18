@@ -9,13 +9,7 @@
         ? \App\Support\StatusLabel::general($status)
         : \App\Support\StatusLabel::service($status);
 
-    $class = match ($status) {
-        'en_espera'   => 'dash-badge-pendiente',
-        'en_progreso' => 'dash-badge-progreso',
-        'realizado'   => 'dash-badge-completado',
-        'cancelado'   => 'dash-badge-cancelado',
-        default       => null,
-    };
+    $class = \App\Support\StatusLabel::badgeClass($status);
 @endphp
 
 @if ($class)

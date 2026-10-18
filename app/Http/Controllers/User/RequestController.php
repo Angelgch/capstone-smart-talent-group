@@ -67,6 +67,10 @@ class RequestController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->has('dni')) {
+            $request->merge(['dni' => \App\Support\DniHelper::sanitize((string) $request->input('dni'))]);
+        }
+
         $data = $request->validate($this->rules(true), $this->messages());
 
         // Si eligió "Sí" enviar documento, el archivo es obligatorio
