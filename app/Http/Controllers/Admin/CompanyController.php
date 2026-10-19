@@ -36,6 +36,8 @@ class CompanyController extends Controller
     {
         $company = Company::create($request->validate($this->companyRules(), $this->companyMessages()));
 
+        \Illuminate\Support\Facades\Log::info('COMPANY CREATED ON DB: ' . config('database.connections.mysql.database') . ' RUC: ' . $company->ruc);
+
         return redirect()->route('admin.companies.index')
             ->with('status', 'Empresa "' . $company->name . '" registrada correctamente.');
     }

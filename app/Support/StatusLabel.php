@@ -31,4 +31,16 @@ class StatusLabel
             default       => null,   // null = no solicitado
         };
     }
+
+    // Clase CSS / color de semaforización para la etiqueta de estado
+    public static function badgeClass(?string $status): ?string
+    {
+        return match ($status) {
+            'en_espera'   => 'dash-badge-pendiente',
+            'en_progreso' => 'dash-badge-progreso',
+            'realizado'   => 'dash-badge-completado',
+            'cancelado'   => 'dash-badge-cancelado',
+            default       => null,
+        };
+    }
 }

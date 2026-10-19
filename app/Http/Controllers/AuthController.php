@@ -47,7 +47,10 @@ class AuthController extends Controller
        ------------------------------------------------------------------ */
     public function register(Request $request): JsonResponse
     {
-        $request->merge(['email' => Str::lower((string) $request->input('email'))]);
+        $request->merge([
+            'email' => Str::lower((string) $request->input('email')),
+            'dni'   => \App\Support\DniHelper::sanitize((string) $request->input('dni')),
+        ]);
 
         $data = $request->validate([
             'ruc'      => ['required', 'digits:11', 'exists:companies,ruc'],   // la empresa tiene que existir
