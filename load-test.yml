@@ -1,0 +1,27 @@
+# ==============================================================================
+# Artillery Load Testing - Smart Talent Group (Capstone)
+# Configuración ultraligera y segura para pruebas de rendimiento en entorno local.
+# ==============================================================================
+config:
+  target: "http://127.0.0.1:8000"
+  http:
+    timeout: 10 # Margen para el servidor de desarrollo monohilo (php artisan serve)
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      rampTo: 3
+      name: "Carga controlada para entorno de desarrollo (1 a 3 usuarios/seg durante 10s)"
+  defaults:
+    headers:
+      User-Agent: "Artillery-LoadTest/1.0 (Smart Talent Group)"
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+
+scenarios:
+  - name: "Navegación pública: Home e Inicio de Sesión"
+    flow:
+      # En esta aplicación (routes/auth.php), GET '/' es la ruta 'login' pública de bienvenida
+      - get:
+          url: "/"
+      - think: 1
+      - get:
+          url: "/up"
