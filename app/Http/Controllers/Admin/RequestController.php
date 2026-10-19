@@ -93,9 +93,9 @@ class RequestController extends Controller
             DB::transaction(function () use ($request, $data, $sol, &$nuevos, &$aBorrar) {
                 // Solo se recorren los servicios que el usuario pidió (lo demás que llegue se ignora)
                 foreach ($sol->services()->with('result')->get() as $item) {
-                    $key    = $item->service;
-                    $nuevo  = data_get($data, "status.$key", $item->status);
-                    $file   = $request->file("informe.$key");
+                    $key   = $item->service;
+                    $nuevo = data_get($data, "status.$key", $item->status);
+                    $file  = $request->file("informe.$key");
 
                     // "Realizado" exige informe (el que ya estaba o el que se sube ahora)
                     if ($nuevo === 'realizado' && ! $item->result && ! $file) {
@@ -104,7 +104,7 @@ class RequestController extends Controller
                         ]);
                     }
 
-                    $item->update(['status' => $nuevo]);
+                    $item->forceFill(['status' => $nuevo])->save();
 
                     if ($file) {
                         $path = $file->store("requests/{$sol->id}/{$key}", 'local');
